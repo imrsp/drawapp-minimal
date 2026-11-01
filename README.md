@@ -1,26 +1,34 @@
 # drawapp-minimal
 
-An independently maintained Electron desktop diagram editor. The desktop shell lives in `src/`; the editor source is developed in the ordinary `drawio/` directory as part of this repository. It is not a Git submodule and this project does not fetch or sync from an upstream repository during development or builds.
+**drawapp-minimal is an unofficial, simplified fork of [draw.io](https://github.com/jgraph/drawio), packaged as an Electron desktop app and intended as a customizable foundation for developers.** Use it to build diagramming tools for a particular domain, with focused workflows, terminology, shapes, templates, and UI.
 
-The editor was initially based on the [draw.io project](https://github.com/jgraph/drawio). Upstream copyright notices and license files are retained. The application branding and icons are specific to drawapp-minimal. This project is unofficial and is not affiliated with or endorsed by the upstream maintainers.
+This repository keeps the full editor source in `drawio/` alongside the Electron shell in `src/`. It is maintained as a standalone codebase: `drawio/` is not a submodule, and development or builds do not fetch or overwrite source from upstream.
 
-## Requirements
+## Why this fork
+
+The goal is to make the general-purpose draw.io editor a leaner base that developers can adapt into specialized flowchart and chart-making software. This repository is not just a packaged copy of the upstream desktop app; the editor and desktop integration are developed together here.
+
+The embedded editor is based on draw.io **32.6.9**, the last upstream version this project adopted under Apache License 2.0. Upstream changed the license for subsequent releases starting with **31.5.2**; this project therefore keeps that Apache-licensed codebase and does not incorporate later upstream editor versions. The upstream project and its current licensing information are available at [jgraph/drawio](https://github.com/jgraph/drawio).
+
+## Get started
+
+### Requirements
 
 - Node.js 22.12 or later
 - npm
 
-## Develop
+### Run from source
 
 ```sh
 npm install
 npm start
 ```
 
-Run the test suite with `npm test`. The editor code and desktop integration are developed together in this repository.
+Run `npm test` to execute the Node.js test suite. See [DEVELOPMENT.md](DEVELOPMENT.md) for repository structure and development notes.
 
 ## Build
 
-Build commands create local artifacts under `dist/` and never publish them:
+Build commands write local artifacts to `dist/` and do not publish them:
 
 ```sh
 # macOS app for the current architecture
@@ -34,8 +42,10 @@ npm run build:appx
 npm run build:snap
 ```
 
-Windows signing and macOS signing/notarization require your own credentials. The `drawapp-minimal.app` produced without a Developer ID certificate is ad-hoc signed and may require clearing quarantine when moved to another Mac.
+Windows signing and macOS signing/notarization require your own credentials. The macOS app built without a Developer ID certificate is ad-hoc signed and may require clearing quarantine when moved to another Mac. More packaging notes are in [doc/BUILDING_FOR_PERSONAL_USE.md](doc/BUILDING_FOR_PERSONAL_USE.md).
 
-## License
+## Licensing and attribution
 
-The desktop project is licensed under Apache-2.0. The editor and bundled third-party components retain their own copyright and license notices; see `LICENSE`, `drawio/LICENSE`, and component-level license files.
+The Electron desktop shell and project-specific code are licensed under Apache-2.0; see [LICENSE](LICENSE). The embedded draw.io source is retained under its upstream Apache License 2.0 terms; see [drawio/LICENSE](drawio/LICENSE). Third-party components and assets may have separate terms, so retain and review the license and attribution files alongside the components, especially the licenses in `drawio/src/main/webapp/img/`, `shapes/`, `stencils/`, and `templates/`.
+
+This is an unofficial fork and is not affiliated with, endorsed by, or sponsored by draw.io or its maintainers. The draw.io name and marks identify the upstream project only; this project's branding and icons are separate.
