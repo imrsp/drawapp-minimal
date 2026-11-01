@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build output and packaged application artifacts
+/dist/
+/out/
+/release/
+/coverage/
+*.dmg
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS and editor files
+.DS_Store
+.idea/
+.project
+.classpath
+.settings/
+.claude/settings.local.json
