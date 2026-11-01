@@ -7,6 +7,8 @@ window.TEMPLATE_PATH = 'templates';
 window.DRAW_MATH_URL = 'math4/es5';
 window.DRAWIO_BASE_URL = '.'; //Prevent access to online website since it is not allowed
 window.DRAWIO_SERVER_URL = '.';
+// Keep the native window title aligned with this desktop application.
+Editor.prototype.appName = 'drawapp-minimal';
 EditorUi.draftSaveDelay = 5000;
 //Disables eval for JS (uses shapes-14-6-5.min.js)
 mxStencilRegistry.allowEval = false;
@@ -2562,7 +2564,7 @@ mxStencilRegistry.allowEval = false;
 	{
 		electron.sendMessage('toggleStoreBkp');
 	};
-	
+
 	App.prototype.toggleGoogleFonts = function()
 	{
 		electron.sendMessage('toggleGoogleFonts');
@@ -2572,7 +2574,7 @@ mxStencilRegistry.allowEval = false;
 	{
 		electron.sendMessage('openDevTools');
 	};
-		
+
 	App.prototype.desktopZoomIn = function()
 	{
 		electron.sendMessage('zoomIn');

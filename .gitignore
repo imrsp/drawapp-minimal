@@ -8,6 +8,17 @@ node_modules/
 /coverage/
 *.dmg
 
+# Intermediate bundles produced by drawio/etc/build/build.xml
+/drawio/build/
+/drawio/etc/build/base.min.js
+/drawio/etc/build/base-viewer.min.js
+/drawio/etc/build/client.min.js
+/drawio/etc/build/grapheditor.min.js
+/drawio/etc/build/sidebar.min.js
+/drawio/etc/build/Graph-Resources.js
+/drawio/etc/build/Graph-Stylesheet.js
+/drawio/etc/build/.tmp*
+
 # Local environment and secrets
 .env
 .env.*

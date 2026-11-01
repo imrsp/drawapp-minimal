@@ -7787,7 +7787,11 @@
 				
 				div.appendChild(option);
 				
-				if (!ui.isOffline() || mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
+				if (EditorUi.isElectronApp)
+				{
+					option.appendChild(ui.menus.createMathHelpIcon());
+				}
+				else if (!ui.isOffline() || mxClient.IS_CHROMEAPP)
 				{
 					option.appendChild(ui.menus.createHelpLink(
 						'https://www.drawio.com/doc/faq/math-typesetting'));

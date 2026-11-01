@@ -171,6 +171,35 @@
 		}
 	};
 
+	Menus.prototype.createMathHelpIcon = function()
+	{
+		if (!EditorUi.isElectronApp)
+		{
+			return this.createHelpLink('https://www.drawio.com/doc/faq/math-typesetting');
+		}
+
+		var link = document.createElement('img');
+		link.setAttribute('src', Editor.helpImage);
+		link.setAttribute('title', '数学排版说明');
+		link.setAttribute('aria-label', '数学排版说明');
+		link.className = 'geHelpIcon';
+
+		var showHelp = mxUtils.bind(this, function(evt)
+		{
+			this.editorUi.showError('数学排版',
+				'启用后，文本中的 LaTeX 公式会渲染为数学公式，例如：\\(x^2 + y^2 = z^2\\)。',
+				mxResources.get('ok'));
+			this.editorUi.hideCurrentMenu();
+
+			if (evt != null) mxEvent.consume(evt);
+		});
+
+		mxEvent.addGestureListeners(link, showHelp);
+		Editor.initKeyboardButton(link, showHelp);
+
+		return link;
+	};
+
 	/**
 	 * Adds the collaboration items for the current file as one section.
 	 */
@@ -1293,7 +1322,8 @@
 		action.setToggleAction(true);
 		action.setSelectedCallback(function() { return graph.shadowVisible; });
 
-		editorUi.actions.put('about', new Action('v' + EditorUi.VERSION, function(arg1, evt)
+		editorUi.actions.put('about', new Action('v' + (EditorUi.isElectronApp && urlParams['appVersion'] != null ?
+			urlParams['appVersion'] : EditorUi.VERSION), function(arg1, evt)
 		{
 			if (mxEvent.isShiftDown(evt) && (EditorUi.isElectronApp ||
 				editorUi.isOwnGDriveDomain()))
@@ -2058,7 +2088,27 @@
 		
 		this.put('help', new Menu(mxUtils.bind(this, function(menu, parent)
 		{
-			if (!mxClient.IS_CHROMEAPP && (editorUi.isOffline() || navigator.standalone))
+			if (EditorUi.isElectronApp)
+			{
+				editorUi.actions.put('desktopZoomIn', new Action('zoomIn', function()
+				{
+					editorUi.desktopZoomIn();
+				}));
+
+				editorUi.actions.put('desktopZoomOut', new Action('zoomOut', function()
+				{
+					editorUi.desktopZoomOut();
+				}));
+
+				editorUi.actions.put('desktopResetZoom', new Action('actualSize', function()
+				{
+					editorUi.desktopResetZoom();
+				}));
+
+				this.addMenuItems(menu, ['desktopResetZoom', 'desktopZoomIn',
+					'desktopZoomOut', '-', 'about'], parent);
+			}
+			else if (!mxClient.IS_CHROMEAPP && (editorUi.isOffline() || navigator.standalone))
 			{
 				this.addMenuItems(menu, ['keyboardShortcuts', '-', 'about'], parent);
 			}
@@ -2119,40 +2169,9 @@
 					input.focus();
 				}, 0);
 
-				if (EditorUi.isElectronApp)
-				{
-					editorUi.actions.addAction('website...', function()
-					{
-						editorUi.openLink('https://www.drawio.com');
-					});
-					
-					editorUi.actions.put('desktopZoomIn', new Action('zoomIn', function()
-					{
-						editorUi.desktopZoomIn();
-					}));
-
-					editorUi.actions.put('desktopZoomOut', new Action('zoomOut', function()
-					{
-						editorUi.desktopZoomOut();
-					}));
-
-					editorUi.actions.put('desktopResetZoom', new Action('actualSize', function()
-					{
-						editorUi.desktopResetZoom();
-					}));
-
-					this.addMenuItems(menu, ['-', 'keyboardShortcuts', 'quickStart',
-						'website', 'support', '-'], parent);
-
-					this.addMenuItems(menu, ['desktopResetZoom', 'desktopZoomIn',
-						'desktopZoomOut', '-', 'openDevTools', '-', 'about'], parent);
-				}
-				else
-				{
-					this.addMenuItems(menu, ['-', 'keyboardShortcuts',
-						'quickStart', 'downloadDesktop', 'support', '-',
-						'about'], parent);
-				}
+				this.addMenuItems(menu, ['-', 'keyboardShortcuts',
+					'quickStart', 'downloadDesktop', 'support', '-',
+					'about'], parent);
 			}
 			
 			if (urlParams['test'] == '1')
@@ -6305,19 +6324,7 @@
 			storeBkpAction.setToggleAction(true);
 			storeBkpAction.setSelectedCallback(function() { return enableStoreBkp; });
 
-			var enableGoogleFonts = urlParams['isGoogleFontsEnabled'] == '1';
-			
-			var googleFontsAction = editorUi.actions.addAction('googleFonts', function()
-			{
-				editorUi.toggleGoogleFonts();
-				enableGoogleFonts = !enableGoogleFonts;
-				editorUi.alert(mxResources.get('restartForChangeRequired'));
-			});
-
-			googleFontsAction.setToggleAction(true);
-			googleFontsAction.setSelectedCallback(function() { return enableGoogleFonts; });
-
-			var desktopItems = ['-', 'googleFonts', 'spellCheck', 'autoBkp', 'drafts'];
+			var desktopItems = ['-', 'spellCheck', 'autoBkp', 'drafts'];
 
 			editorUi.actions.addAction('openDevTools', function()
 			{
@@ -6437,7 +6444,11 @@
 				{
 					var item = this.addMenuItem(menu, 'mathematicalTypesetting', parent);
 
-					if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
+					if (EditorUi.isElectronApp)
+					{
+						item.firstChild.nextSibling.appendChild(this.createMathHelpIcon());
+					}
+					else if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP)
 					{
 						this.addLinkToItem(item, 'https://www.drawio.com/doc/faq/math-typesetting');
 					}

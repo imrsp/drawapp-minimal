@@ -1,7 +1,7 @@
 {
   "name": "drawapp-minimal",
   "productName": "drawapp-minimal",
-  "version": "32.6.9",
+  "version": "1.0.0",
   "description": "drawapp-minimal desktop diagram editor",
   "exports": "./src/main/electron.js",
   "type": "module",
@@ -11,7 +11,7 @@
   },
   "scripts": {
     "start": "electron .",
-    "test": "node --test src/test/cli-args.test.js src/test/msi-project-created.test.js src/test/window-bounds.test.js",
+    "test": "node --test src/test/cli-args.test.js src/test/msi-project-created.test.js src/test/window-bounds.test.js src/test/window-lifecycle.test.js",
     "build:mac": "electron-builder --config electron-builder-linux-mac.json --mac dir --publish never",
     "build:win": "electron-builder --config electron-builder-win.json --publish never",
     "build:win-arm64": "electron-builder --config electron-builder-win-arm64.json --publish never",

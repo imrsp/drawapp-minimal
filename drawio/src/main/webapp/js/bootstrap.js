@@ -68,8 +68,8 @@ if (window.location.hash != null && window.location.hash.substring(0, 2) == '#P'
 }
 
 // Global variable for desktop
-var mxIsElectron = navigator.userAgent != null && navigator.userAgent.toLowerCase().indexOf(' electron/') > -1 && 
-                    navigator.userAgent.indexOf(' draw.io/') > -1;
+var mxIsElectron = navigator.userAgent != null && navigator.userAgent.toLowerCase().indexOf(' electron/') > -1 &&
+                    window.electron != null;
 
 // Redirects page if required
 if (urlParams['dev'] != '1')
@@ -331,8 +331,8 @@ if (urlParams['dev'] == '1')
     // Electron
     if (mxIsElectron)
     {
-        mxscript('js/desktop/DesktopLibrary.js');
-        mxscript('js/desktop/ElectronApp.js');
+        mxscript('js/diagramly/DesktopLibrary.js');
+        mxscript('js/diagramly/ElectronApp.js');
 
         // ELK, Mermaid and PlantUML are loaded by Devel.js above. Do not
         // load js/elk/drawio-elk.min.js again here: re-running its footer

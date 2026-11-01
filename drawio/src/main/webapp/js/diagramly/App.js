@@ -8944,7 +8944,7 @@ App.prototype.updateHeader = function()
 		}));
 
 		this.initKeyboardButton(this.appIcon);
-		this.appIcon.setAttribute('aria-label', mxResources.get('draw.io'));
+		this.appIcon.setAttribute('aria-label', EditorUi.isElectronApp ? 'drawapp-minimal' : mxResources.get('draw.io'));
 
 		mxEvent.addListener(this.appIcon, 'mouseover', mxUtils.bind(this, function()
 		{
@@ -8969,7 +8969,7 @@ App.prototype.updateHeader = function()
 			this.appIcon.style.backgroundSize = ''
 		}));
 		
-		if (urlParams['embed'] != '1')
+		if (urlParams['embed'] != '1' && !EditorUi.isElectronApp)
 		{
 			this.menubarContainer.appendChild(this.appIcon);
 		}

@@ -9,6 +9,7 @@ import zlib from 'zlib';
 import log from'electron-log';
 import { parseDrawioArgs, formatHelp, validFormatRegExp as validFormatRegExpImport } from './args.js';
 import { parseLastWinSize, placeWindowOnDisplays } from './window-bounds.js';
+import {shouldResumeQuitAfterWindowClosed} from './window-lifecycle.js';
 import {PDFDocument, PDFHexString, PDFName} from '@cantoo/pdf-lib';
 import Store from 'electron-store';
 import contextMenu from 'electron-context-menu';
@@ -105,6 +106,7 @@ const isWin = process.platform === 'win32'
 let enableSpellCheck = store != null ? store.get('enableSpellCheck') : false;
 enableSpellCheck = enableSpellCheck != null ? enableSpellCheck : isMac;
 let enableStoreBkp = store != null ? (store.get('enableStoreBkp') != null ? store.get('enableStoreBkp') : true) : false;
+let isGoogleFontsEnabled = store != null ? (store.get('isGoogleFontsEnabled') != null ? store.get('isGoogleFontsEnabled') : false) : false;
 let dialogOpen = false;
 // One-shot value used to seed the drawio Configuration's defaultAdaptiveColors
 // for users running this version for the first time. 'auto' for new installs,
@@ -508,7 +510,6 @@ async function migrateLegacyLibrariesOnce(webContents)
 }
 let appZoom = 1;
 // Disabled by default
-let isGoogleFontsEnabled = store != null ? (store.get('isGoogleFontsEnabled') != null? store.get('isGoogleFontsEnabled') : false) : false;
 
 // dev=1 makes bootstrap.js load the unminified editor sources, which the
 // packaged app.asar leaves out (see files in electron-builder-*.json), so a
@@ -531,7 +532,7 @@ var queryObj = {
 	'export': 'https://convert.diagrams.net/node/export',
 	'enableSpellCheck': enableSpellCheck? 1 : 0,
 	'enableStoreBkp': enableStoreBkp? 1 : 0,
-	'isGoogleFontsEnabled': isGoogleFontsEnabled? 1 : 0
+	'isGoogleFontsEnabled': isGoogleFontsEnabled ? 1 : 0
 };
 
 try
@@ -577,6 +578,7 @@ function createWindow (opt = {})
 
 	let options = Object.assign(
 	{
+		title: 'drawapp-minimal',
 		backgroundColor: '#FFF',
 		width: lastWinSize.width,
 		height: lastWinSize.height,
@@ -628,6 +630,7 @@ function createWindow (opt = {})
 
 	//Cannot be read before app is ready
 	queryObj['appLang'] = app.getLocale();
+	queryObj['appVersion'] = app.getVersion();
 
 	let ourl = url.format(
 	{
@@ -821,6 +824,14 @@ function createWindow (opt = {})
 		}
 		
 		windowsRegistry.splice(index, 1)
+
+		// The close handler cancels Electron's original quit while it checks for
+		// unsaved changes. Resume only an explicit quit request (Cmd+Q or Quit);
+		// clicking the macOS close button should leave the app running.
+		if (shouldResumeQuitAfterWindowClosed(cmdQPressed, windowsRegistry))
+		{
+			app.quit();
+		}
 	})
 	
 	return mainWindow
@@ -831,6 +842,12 @@ function createWindow (opt = {})
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() =>
 {
+	app.setAboutPanelOptions({
+		applicationName: 'drawapp-minimal',
+		applicationVersion: 'v' + app.getVersion(),
+		copyright: 'Copyright 2026 drawapp-minimal contributors'
+	});
+
 	// Determine initial defaultAdaptiveColors for the drawio Configuration
 	// before any window is created so the value is passed to the preload.
 	initialAdaptiveColorsDefault = detectInitialAdaptiveColorsDefault();
@@ -852,8 +869,8 @@ app.whenReady().then(() =>
 				// router; without it this header CSP overrides the more permissive meta CSP
 				// set in ElectronApp.js (the strictest of multiple policies wins)
 				'Content-Security-Policy': ['default-src \'self\'; script-src \'self\' \'wasm-unsafe-eval\'; connect-src \'self\'' +
-				(isGoogleFontsEnabled? ' https://fonts.googleapis.com https://fonts.gstatic.com' : '') + '; img-src * data:; media-src *; font-src * data:; frame-src \'self\'; style-src \'self\' \'unsafe-inline\'' +
-				(isGoogleFontsEnabled? ' https://fonts.googleapis.com' : '') + '; base-uri \'none\';child-src \'self\';object-src \'none\';']
+				(isGoogleFontsEnabled ? ' https://fonts.googleapis.com https://fonts.gstatic.com' : '') + '; img-src * data:; media-src *; font-src * data:; frame-src \'self\'; style-src \'self\' \'unsafe-inline\'' +
+				(isGoogleFontsEnabled ? ' https://fonts.googleapis.com' : '') + '; base-uri \'none\';child-src \'self\';object-src \'none\';']
 			}
 		})
 	});
@@ -1286,7 +1303,6 @@ app.whenReady().then(() =>
 								}
 								else
 								{
-									cmdQPressed = true;
 									dummyWin.destroy();
 								}
 							};
@@ -1741,14 +1757,7 @@ app.whenReady().then(() =>
 	    let template = [{
 	      label: app.name,
 	      submenu: [
-	        {
-	          label: 'About ' + app.name,
-          click() { shell.openExternal('https://github.com'); }
-	        },
-	        {
-	          label: 'Support',
-	          click() { shell.openExternal('https://github.com/jgraph/drawio-desktop/issues'); }
-			},
+	        { role: 'about' },
 	        { type: 'separator' },
 			resetZoom,
 			zoomIn,
@@ -1790,7 +1799,7 @@ app.whenReady().then(() =>
 
 })
 
-//Quit from the dock context menu should quit the application directly
+// Quit from the dock context menu should quit the application directly
 if (isMac) 
 {
 	app.on('before-quit', function() {
@@ -1798,7 +1807,6 @@ if (isMac)
 	});	
 }
 
-// Quit when all windows are closed.
 app.on('window-all-closed', function ()
 {
 	if (__DEV__) 
