@@ -3630,15 +3630,6 @@ var PageSetupDialog = function(editorUi)
 
 	adaptiveRow.appendChild(adaptiveDropdown);
 
-	if (editorUi.menus != null && editorUi.menus.createHelpLink != null &&
-		(!editorUi.isOffline() || mxClient.IS_CHROMEAPP || EditorUi.isElectronApp))
-	{
-		var helpLink = editorUi.menus.createHelpLink(
-			'https://www.drawio.com/docs/manual/editor/appearance/adaptive-colours/');
-		helpLink.style.marginLeft = '8px';
-		adaptiveRow.appendChild(helpLink);
-	}
-
 	advanced.content.appendChild(adaptiveRow);
 
 	// Drawing scale of the measure placeholders, eg. 1 : 50 (see
@@ -4073,7 +4064,7 @@ var PageSetupDialog = function(editorUi)
 	}
 
 	var dlg = new CustomDialog(editorUi, div, applyFn, null,
-		mxResources.get('apply'), 'https://www.drawio.com/docs/manual/pages/page-setup/');
+		mxResources.get('apply'), null);
 	this.container = dlg.container;
 
 	/**

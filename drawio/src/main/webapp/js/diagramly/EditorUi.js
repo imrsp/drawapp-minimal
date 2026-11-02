@@ -266,7 +266,7 @@
 	/**
 	 * Link for scratchpad help.
 	 */
-	EditorUi.scratchpadHelpLink = 'https://www.drawio.com/doc/faq/scratchpad';
+	EditorUi.scratchpadHelpLink = null;
 
 	/**
 	 * Specifies if the edit option should be shown in the HTML export dialog.
@@ -7580,7 +7580,9 @@
 			var btn3 = null;
 			var fn3 = null;
 			
-			if (e != null && e.helpLink != null)
+			if (e != null && e.helpLink != null &&
+				!/(^|\.)(drawio\.com|draw\.io|diagrams\.net)$/i.test(
+					new URL(e.helpLink, window.location.href).hostname))
 			{
 				btn3 = mxResources.get('help');
 				
@@ -7716,7 +7718,8 @@
 			if (!small)
 			{
 				var logo = document.createElement('img');
-				logo.setAttribute('src', IMAGE_PATH + '/logo.png');
+				logo.setAttribute('src', (typeof appBranding !== 'undefined' && appBranding.logoUrl) || IMAGE_PATH + '/electron-logo.svg');
+				logo.onerror = function() { logo.onerror = null; logo.src = IMAGE_PATH + '/electron-logo.svg'; };
 				logo.setAttribute('border', '0');
 				logo.setAttribute('align', 'absmiddle');
 				logo.style.cssText = 'margin-top:-4px;margin-left:8px;'+
@@ -8153,7 +8156,7 @@
 				});
 			}
 		}), null, mxResources.get('export'),
-			'https://www.drawio.com/doc/faq/export-diagram');
+			null);
 
 		mxEvent.addListener(sourceSelect, 'change', update);
 		mxEvent.addListener(formatSelect, 'change', update);
@@ -10657,7 +10660,7 @@
 		linkSelect.style.boxSizing = 'border-box';
 
 		helpLink = (helpLink != null) ? helpLink :
-			'https://www.drawio.com/docs/manual/export/publish-link/';
+			null;
 
 		var makeCopy = document.createElement('option');
 		mxUtils.write(makeCopy, mxResources.get('includeCopyOfMyDiagram'));
@@ -22961,7 +22964,7 @@
 		// Sets help link for placeholders
 		if (!this.isOffline() && typeof window.EditDataDialog !== 'undefined')
 		{
-			EditDataDialog.placeholderHelpLink = 'https://www.drawio.com/doc/faq/predefined-placeholders';
+			EditDataDialog.placeholderHelpLink = null;
 		}
 		
 		if (/viewer\.diagrams\.net$/.test(window.location.hostname) ||
@@ -33390,7 +33393,7 @@
 				mxUtils.bind(this, function(newValue)
 			{
     			this.importCsv(newValue);
-			}), mxResources.get('import'), 'https://www.drawio.com/blog/insert-from-csv');
+			}), mxResources.get('import'), null);
 		}
 
 		this.showDialog(this.importCsvDialog.container, 640, 520, true, true, null,
@@ -33469,19 +33472,12 @@
 				copyBtn.setAttribute('title', 'copy');
 				copyBtn.className = 'geBtn';
 				buttons.appendChild(copyBtn);
-			}), true, null, null, EditorUi.APPLY_LAYOUTS_SPEC_URL);
+			}), true, null, null, null);
 
 			this.showDialog(dlg.container, 620, 460, true, true, null, null, null, new mxRectangle(0, 0, 440, 280));
 			dlg.init();
 		}));
 	};
-
-	/**
-	 * URL of the canonical JSON layout spec — the help-icon target for the
-	 * custom layout dialog. Defined once here so a future repoint doesn't
-	 * have to touch every callsite.
-	 */
-	EditorUi.APPLY_LAYOUTS_SPEC_URL = 'https://www.drawio.com/docs/reference/json-layout-specification/';
 
 	/**
 	 * Restricts the given layouts to the supplied cell subset. mxGraph
@@ -33960,7 +33956,7 @@
 
 			onApply({layout: 'mxOrgChartLayout', config: config});
 		}, onCancel || null, mxResources.get('apply'),
-			'https://www.drawio.com/docs/manual/layouts/org-chart-layout/', resetBtn);
+			null, resetBtn);
 
 		// null height = size to content (a fixed height clips the third
 		// row behind a scrollbar)
@@ -34011,7 +34007,7 @@
 	 */
 	EditorUi.LAYOUT_DIALOGS = {
 		'BalloonTreeLayout': {key: '.drawio-balloon-tree-layout-settings',
-			help: 'https://www.drawio.com/docs/manual/layouts/balloon-tree-layout/',
+			help: null,
 			fields: [['levelDistance', 'parentChildSpacing', 30, 0],
 				['nodeDistance', 'siblingSpacing', 10, 0],
 				['arc', 'arc', 300, 30, 360],
@@ -34019,7 +34015,7 @@
 				['resetConnectionPoints', 'resetConnectionPoints', false],
 				['straightConnectors', 'straightConnectors', false]]},
 		'MindmapLayout': {key: '.drawio-mindmap-layout-settings',
-			help: 'https://www.drawio.com/docs/manual/layouts/mindmap-layout/',
+			help: null,
 			fields: [['levelDistance', 'parentChildSpacing', 40, 0],
 				['nodeDistance', 'siblingSpacing', 10, 0],
 				['resetConnectionPoints', 'resetConnectionPoints', false]]}
@@ -35065,7 +35061,7 @@
 				});
 			});
 		}, null, mxResources.get((container != null) ? 'apply' : 'insert'),
-			'https://www.drawio.com/docs/manual/insert/insert-outline/', typeSelect);
+			null, typeSelect);
 
 		this.showDialog(dlg.container, 440, null, true, true);
 		textarea.focus();
@@ -39859,7 +39855,7 @@
 			}
 			
 			if (pendingLibs == 0) this.spinner.stop();
-		}), null, null, 'https://www.drawio.com/doc/faq/custom-libraries-confluence-cloud');
+		}), null, null, null);
 		this.showDialog(dlg.container, 340, 390, true, true, null, null, null, null, true);
 	};
 	

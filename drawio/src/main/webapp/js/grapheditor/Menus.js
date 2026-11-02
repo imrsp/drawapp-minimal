@@ -25,7 +25,7 @@ Menus.prototype.defaultFontSize = '12';
 /**
  * Sets the default font size.
  */
-Menus.prototype.defaultMenuItems = ['file', 'edit', 'view', 'arrange', 'extras', 'help'];
+Menus.prototype.defaultMenuItems = ['file', 'edit', 'view', 'arrange', 'extras'];
 
 /**
  * Lookup for menu items and submenus to hide. Set via the
@@ -401,23 +401,6 @@ Menus.prototype.init = function()
 
 		var groupItem = this.addMenuItem(menu, 'group', parent);
 
-		if (groupItem != null)
-		{
-			var help = this.editorUi.createHelpIcon(
-				'https://www.drawio.com/docs/manual/editor/group-shapes-connectors/');
-			help.style.display = 'inline-block';
-			help.style.verticalAlign = 'middle';
-			help.style.marginLeft = '6px';
-			var cells = groupItem.getElementsByTagName('td');
-
-			// Append to the label column (col2) so the icon sits immediately
-			// next to the "Group" label, not next to the shortcut in col3.
-			if (cells.length > 1)
-			{
-				cells[1].appendChild(help);
-			}
-		}
-
 		this.addMenuItems(menu, ['ungroup', 'removeFromGroup', '-', 'clearWaypoints', 'autosize'], parent);
 	}))).isEnabled = isGraphEnabled;
 	this.put('insert', new Menu(mxUtils.bind(this, function(menu, parent)
@@ -474,10 +457,6 @@ Menus.prototype.init = function()
 	this.put('extras', new Menu(mxUtils.bind(this, function(menu, parent)
 	{
 		this.addMenuItems(menu, ['collapseExpand', '-', 'editDiagram']);
-	})));
-	this.put('help', new Menu(mxUtils.bind(this, function(menu, parent)
-	{
-		this.addMenuItems(menu, ['help', '-', 'about']);
 	})));
 };
 

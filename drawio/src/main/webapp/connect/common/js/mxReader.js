@@ -640,11 +640,11 @@ DrawioViewer.prototype.show = function(container)
 	} 
 	else if (this.options.licenseStatus == 'VERSION_MISMATCH') 
 	{
-		this.showWarning(mxResources.get('drawio.reader.versionMismatch', ['https://support.draw.io/pages/viewpage.action?pageId=11829320']));
+		this.showWarning(mxResources.get('drawio.reader.versionMismatch'));
 	}
 	else if (this.options.licenseStatus == 'USER_MISMATCH') 
 	{
-		this.showWarning(mxResources.get('drawio.reader.userMismatch', ['https://support.draw.io/pages/viewpage.action?pageId=11829323']));
+		this.showWarning(mxResources.get('drawio.reader.userMismatch'));
 	}
 	
 	

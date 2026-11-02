@@ -563,7 +563,7 @@ insertText=వచనం చేర్చు
 inserting=చేర్చుతోంది
 installApp=యాప్ ఇన్‌స్టాల్ చేయి
 invalidFilename=రేఖాచిత్ర పేర్లలో ఈ అక్షరాలు ఉండకూడదు: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=మీ లైసెన్స్ చెల్లదు, దయచేసి ఈ <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">పేజీ</a> చూడండి.
+invalidLicenseSeeThisPage=మీ లైసెన్స్ చెల్లదు, దయచేసి ఈ పేజీ చూడండి.
 invalidInput=చెల్లని ఇన్‌పుట్
 invalidName=చెల్లని పేరు
 invalidOrMissingFile=చెల్లని లేదా తప్పిపోయిన ఫైల్

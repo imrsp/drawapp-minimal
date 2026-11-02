@@ -163,43 +163,6 @@
 		return this.editorUi.createHelpIcon(href);
 	};
 
-	Menus.prototype.addLinkToItem = function(item, href)
-	{
-		if (item != null)
-		{
-			item.firstChild.nextSibling.appendChild(this.createHelpLink(href));
-		}
-	};
-
-	Menus.prototype.createMathHelpIcon = function()
-	{
-		if (!EditorUi.isElectronApp)
-		{
-			return this.createHelpLink('https://www.drawio.com/doc/faq/math-typesetting');
-		}
-
-		var link = document.createElement('img');
-		link.setAttribute('src', Editor.helpImage);
-		link.setAttribute('title', '数学排版说明');
-		link.setAttribute('aria-label', '数学排版说明');
-		link.className = 'geHelpIcon';
-
-		var showHelp = mxUtils.bind(this, function(evt)
-		{
-			this.editorUi.showError('数学排版',
-				'启用后，文本中的 LaTeX 公式会渲染为数学公式，例如：\\(x^2 + y^2 = z^2\\)。',
-				mxResources.get('ok'));
-			this.editorUi.hideCurrentMenu();
-
-			if (evt != null) mxEvent.consume(evt);
-		});
-
-		mxEvent.addGestureListeners(link, showHelp);
-		Editor.initKeyboardButton(link, showHelp);
-
-		return link;
-	};
-
 	/**
 	 * Adds the collaboration items for the current file as one section.
 	 */
@@ -762,7 +725,7 @@
 			editorUi.getPublicUrl(editorUi.getCurrentFile(), function(url)
 			{
 				editorUi.showHtmlDialog(mxResources.get('export'),
-					'https://www.drawio.com/docs/manual/export/embed-html/', url, function(publicUrl, zoomEnabled,
+					null, url, function(publicUrl, zoomEnabled,
 					initialZoom, linkTarget, linkColor, fit, allPages, layers, tags, lightbox, editLink, theme,
 					useTagSettings, linkIcons, tooltipIcons)
 				{
@@ -1205,7 +1168,7 @@
 		editorUi.actions.put('exportSvg', new Action('formatSvg' + '...', function()
 		{
 			editorUi.showExportDialog(mxResources.get('formatSvg'), true, mxResources.get('export'),
-				'https://www.drawio.com/doc/faq/export-diagram',
+				null,
 				mxUtils.bind(this, function(scale, transparentBackground, ignoreSelection,
 					addShadow, editable, embedImages, border, cropImage, currentPage,
 					linkTarget, grid, theme, exportType, embedFonts, embedCellMetadata,
@@ -1241,7 +1204,7 @@
 			if (editorUi.editor.isExportToCanvas())
 			{
 				editorUi.showExportDialog(mxResources.get('image'), false, mxResources.get('export'),
-					'https://www.drawio.com/doc/faq/export-diagram',
+					null,
 					mxUtils.bind(this, function(scale, transparentBackground, ignoreSelection, addShadow, editable,
 						embedImages, border, cropImage, currentPage, dummy, grid, theme, exportType, embedFonts,
 						embedCellMetadata, dpi)
@@ -1322,8 +1285,8 @@
 		action.setToggleAction(true);
 		action.setSelectedCallback(function() { return graph.shadowVisible; });
 
-		editorUi.actions.put('about', new Action('v' + (EditorUi.isElectronApp && urlParams['appVersion'] != null ?
-			urlParams['appVersion'] : EditorUi.VERSION), function(arg1, evt)
+		editorUi.actions.put('about', new Action('v' + (EditorUi.isElectronApp && urlParams['displayVersion'] != null ?
+			urlParams['displayVersion'] : (EditorUi.isElectronApp && urlParams['appVersion'] != null ? urlParams['appVersion'] : EditorUi.VERSION)), function(arg1, evt)
 		{
 			if (mxEvent.isShiftDown(evt) && (EditorUi.isElectronApp ||
 				editorUi.isOwnGDriveDomain()))
@@ -1340,6 +1303,10 @@
 				}
 			}
 		}));
+		if (EditorUi.isElectronApp && window.appDisplayVersion)
+		{
+			editorUi.actions.get('about').title = 'v' + window.appDisplayVersion;
+		}
 		
 		editorUi.actions.addAction('support...', function()
 		{
@@ -1398,7 +1365,7 @@
 			}
 			else
 			{
-				editorUi.openLink('https://app.diagrams.net/shortcuts.svg');
+				editorUi.openLink('shortcuts.svg');
 			}
 		});
 		
@@ -1570,8 +1537,7 @@
 			{
 				if (!EditorUi.isElectronApp && !Editor.enableAi)
 				{
-					editorUi.alert('AI features require admin approval' +
-						'<br><a href="https://www.drawio.com/doc/faq/confluence-ai-options" target="_blank">Learn more</a>');
+					editorUi.alert('AI features require admin approval');
 				}
 				else
 				{
@@ -1737,7 +1703,7 @@
 				}
 
 				editorUi.showConfigurationEditorDialog(mxResources.get('configuration') + ':', Editor.configurationKey,
-					buttons, 'https://www.drawio.com/doc/faq/configure-diagram-editor');
+					buttons, null);
 			});
 		}
 		
@@ -2086,101 +2052,6 @@
 			editorUi.menus.addMenuItem(menu, 'runLayout', parent, null, null, mxResources.get('custom') + '...');
 		};
 		
-		this.put('help', new Menu(mxUtils.bind(this, function(menu, parent)
-		{
-			if (EditorUi.isElectronApp)
-			{
-				editorUi.actions.put('desktopZoomIn', new Action('zoomIn', function()
-				{
-					editorUi.desktopZoomIn();
-				}));
-
-				editorUi.actions.put('desktopZoomOut', new Action('zoomOut', function()
-				{
-					editorUi.desktopZoomOut();
-				}));
-
-				editorUi.actions.put('desktopResetZoom', new Action('actualSize', function()
-				{
-					editorUi.desktopResetZoom();
-				}));
-
-				this.addMenuItems(menu, ['desktopResetZoom', 'desktopZoomIn',
-					'desktopZoomOut', '-', 'about'], parent);
-			}
-			else if (!mxClient.IS_CHROMEAPP && (editorUi.isOffline() || navigator.standalone))
-			{
-				this.addMenuItems(menu, ['keyboardShortcuts', '-', 'about'], parent);
-			}
-			else
-			{
-				// No translation for menu item since help is english only
-				var item = menu.addItem(mxResources.get('search') + ':',
-					null, null, parent, null, null, false);
-				item.style.cursor = 'default';
-				
-				var input = document.createElement('input');
-				input.setAttribute('aria-label', mxResources.get('search'));
-				input.setAttribute('type', 'text');
-				input.setAttribute('size', '25');
-				input.style.borderWidth = '1px';
-				input.style.marginLeft = '8px';
-
-				mxEvent.addListener(input, 'keydown', mxUtils.bind(this, function(e)
-				{
-					var term = mxUtils.trim(input.value);
-					
-					if (e.keyCode == 13 && term.length > 0)
-					{
-						this.editorUi.searchHelp(term);
-						input.value = '';
-						
-						window.setTimeout(mxUtils.bind(this, function()
-						{
-							this.editorUi.hideCurrentMenu();
-						}), 0);
-					}
-	                else if (e.keyCode == 27)
-	                {
-	                    input.value = '';
-	                }
-				}));
-				
-				item.firstChild.nextSibling.appendChild(input);
-				
-				mxEvent.addGestureListeners(input, function(evt)
-				{
-					if (document.activeElement != input)
-					{
-						input.focus();
-					}
-					
-					mxEvent.consume(evt);
-				}, function(evt)
-				{
-					mxEvent.consume(evt);
-				}, function(evt)
-				{
-					mxEvent.consume(evt);
-				});
-				
-				window.setTimeout(function()
-				{
-					input.focus();
-				}, 0);
-
-				this.addMenuItems(menu, ['-', 'keyboardShortcuts',
-					'quickStart', 'downloadDesktop', 'support', '-',
-					'about'], parent);
-			}
-			
-			if (urlParams['test'] == '1')
-			{
-				menu.addSeparator(parent);
-				this.addSubmenu('testDevelop', menu, parent);
-			}
-		})));
-		
 		editorUi.actions.addAction('languageCode...', function()
 		{
 			var lang = Graph.diagramLanguage || '';
@@ -2195,7 +2066,7 @@
 					graph.refresh();
 				}
 			}), mxResources.get('languageCode'), null, null,
-				'https://www.drawio.com/blog/translate-diagrams');
+				null);
 			editorUi.showDialog(dlg.container, 340, 80, true, true);
 			dlg.init();
 		});
@@ -3068,7 +2939,7 @@
 					editorUi.getPublicUrl(editorUi.getCurrentFile(), function(publicUrl)
 					{
 						editorUi.showPublishLinkDialog(mxResources.get('notion'), null, null, true,
-							'https://www.drawio.com/blog/drawio-notion', footer, publicUrl, editorUi.getCurrentFile(),
+							null, footer, publicUrl, editorUi.getCurrentFile(),
 							function(linkTarget, linkColor, currentPage, lightbox, editLink, layers, width, height,
 								tags, link, transparent, darkMode, allPages, useTagSettings, linkIcons, tooltipIcons)
 							{
@@ -3100,7 +2971,7 @@
 			{
 				editorUi.getPublicUrl(editorUi.getCurrentFile(), function(url)
 				{
-					editorUi.showHtmlDialog(mxResources.get('create'), 'https://www.drawio.com/docs/manual/export/embed-html/',
+					editorUi.showHtmlDialog(mxResources.get('create'), null,
 						url, function(publicUrl, zoomEnabled, initialZoom, linkTarget, linkColor, fit, allPages, layers, tags,
 							lightbox, editLink, theme, useTagSettings, linkIcons, tooltipIcons)
 					{
@@ -3157,7 +3028,7 @@
 						});
 					}
 				}, mxResources.get('image'), mxResources.get('retina'), editorUi.editor.isExportToCanvas(),
-					'https://www.drawio.com/docs/manual/export/embed-diagram/');
+					null);
 			}));
 
 			editorUi.actions.put('embedSvg', new Action('formatSvg' + '...', function()
@@ -3177,7 +3048,7 @@
 						});
 					}
 				}, mxResources.get('formatSvg'), mxResources.get('image'),
-					true, 'https://www.drawio.com/docs/manual/export/embed-svg/', true, true);
+					true, null, true, true);
 			}));
 			
 			editorUi.actions.put('embedIframe', new Action('iframe' + '...', function()
@@ -3776,10 +3647,6 @@
 			this.addMenuItems(menu, ['lightMode', 'darkMode', '-'], parent);
 			var item = editorUi.menus.addMenuItem(menu, 'highContrast', parent);
 
-			if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
-			{
-				editorUi.menus.addLinkToItem(item, 'https://github.com/jgraph/drawio/issues/4296');
-			}
 		})));
 
 		editorUi.actions.addAction('addToScratchpad', function(evt)
@@ -6095,10 +5962,6 @@
 				{
 					var item = editorUi.menus.addMenuItem(menu, 'scratchpad', parent);
 					
-					if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
-					{
-						editorUi.menus.addLinkToItem(item, 'https://www.drawio.com/doc/faq/scratchpad');
-					}
 				}
 				
 				editorUi.menus.addMenuItems(menu, ['-', 'findReplace',
@@ -6125,10 +5988,6 @@
 				{
 					var item = this.addMenuItem(menu, 'scratchpad', parent);
 					
-					if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
-					{
-						this.addLinkToItem(item, 'https://www.drawio.com/doc/faq/scratchpad');
-					}
 				}
 				
 				this.addMenuItems(menu, ['toggleShapes', '-', 'pageView', 'pageScale']);
@@ -6413,8 +6272,6 @@
 					editorUi.menus.addMenuItem(menu, 'organizationAdmin', parent);
 				}
 
-				// Adds trailing separator in case new plugin entries are added
-				menu.addSeparator(parent);
 			}
 			else
 			{
@@ -6444,14 +6301,6 @@
 				{
 					var item = this.addMenuItem(menu, 'mathematicalTypesetting', parent);
 
-					if (EditorUi.isElectronApp)
-					{
-						item.firstChild.nextSibling.appendChild(this.createMathHelpIcon());
-					}
-					else if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP)
-					{
-						this.addLinkToItem(item, 'https://www.drawio.com/doc/faq/math-typesetting');
-					}
 				}
 				
 				if (urlParams['embed'] != '1')
@@ -6481,6 +6330,49 @@
 				{
 					this.addMenuItems(menu, ['organizationAdmin'], parent);
 				}
+			}
+
+			// Keep the former Help menu actions under Extras. For Electron,
+			// separate the configuration action from the zoom controls.
+			if (EditorUi.isElectronApp)
+			{
+				menu.addSeparator(parent);
+			}
+			if (EditorUi.isElectronApp)
+			{
+				editorUi.actions.put('desktopZoomIn', new Action('zoomIn', function()
+				{
+					editorUi.desktopZoomIn();
+				}));
+
+				editorUi.actions.put('desktopZoomOut', new Action('zoomOut', function()
+				{
+					editorUi.desktopZoomOut();
+				}));
+
+				editorUi.actions.put('desktopResetZoom', new Action('actualSize', function()
+				{
+					editorUi.desktopResetZoom();
+				}));
+
+				this.addMenuItems(menu, ['desktopResetZoom', 'desktopZoomIn',
+					'desktopZoomOut', '-', 'about'], parent);
+			}
+			else if (!mxClient.IS_CHROMEAPP && (editorUi.isOffline() || navigator.standalone))
+			{
+				this.addMenuItems(menu, ['keyboardShortcuts', '-', 'about'], parent);
+			}
+			else
+			{
+				this.addMenuItems(menu, ['-', 'keyboardShortcuts',
+					'quickStart', 'downloadDesktop', 'support', '-',
+					'about'], parent);
+			}
+
+			if (urlParams['test'] == '1')
+			{
+				menu.addSeparator(parent);
+				this.addSubmenu('testDevelop', menu, parent);
 			}
 		})));
 
@@ -6714,7 +6606,7 @@
 				menu.addSeparator(parent);
 			}
 
-			editorUi.menus.addSubmenu('help', menu, parent);
+			// Help entries are exposed through Extras only in the desktop UI.
 			menu.addSeparator(parent);
 
 			if (urlParams['embed'] == '1')
@@ -6959,10 +6851,6 @@
 					
 					var item = this.addMenuItem(menu, 'synchronize', parent);
 					
-					if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
-					{
-						this.addLinkToItem(item, 'https://www.drawio.com/doc/faq/synchronize');
-					}
 					
 					menu.addSeparator(parent);
 				}
@@ -6997,10 +6885,6 @@
 						menu.addSeparator(parent);
 						var item = this.addMenuItem(menu, 'synchronize', parent);
 						
-						if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
-						{
-							this.addLinkToItem(item, 'https://www.drawio.com/doc/faq/synchronize');
-						}
 					}
 					
 					this.addMenuItems(menu, ['-', 'save', 'saveAs', '-'], parent);

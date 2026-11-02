@@ -563,7 +563,7 @@ insertText=ಪಠ್ಯ ಸೇರಿಸಿ
 inserting=ಸೇರಿಸಲಾಗುತ್ತಿದೆ
 installApp=ಅಪ್ಲಿಕೇಶನ್ ಸ್ಥಾಪಿಸಿ
 invalidFilename=ರೇಖಾಚಿತ್ರದ ಹೆಸರುಗಳಲ್ಲಿ ಈ ಅಕ್ಷರಗಳನ್ನು ಬಳಸಬಾರದು: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=ನಿಮ್ಮ ಪರವಾನಗಿ ಅಮಾನ್ಯವಾಗಿದೆ, ದಯವಿಟ್ಟು ಈ <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">ಪುಟ</a> ನೋಡಿ.
+invalidLicenseSeeThisPage=ನಿಮ್ಮ ಪರವಾನಗಿ ಅಮಾನ್ಯವಾಗಿದೆ, ದಯವಿಟ್ಟು ಈ ಪುಟ ನೋಡಿ.
 invalidInput=ಅಮಾನ್ಯ ಇನ್‌ಪುಟ್
 invalidName=ಅಮಾನ್ಯ ಹೆಸರು
 invalidOrMissingFile=ಅಮಾನ್ಯ ಅಥವಾ ಕಾಣೆಯಾದ ಫೈಲ್

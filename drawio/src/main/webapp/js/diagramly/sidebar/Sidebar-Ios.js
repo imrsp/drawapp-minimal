@@ -346,7 +346,7 @@
 			{
 			   	var bg = new mxCell('Page title', new mxGeometry(0, 0, 175, 30), s4 + 'iURLBar;verticalAlign=top;fontSize=8;spacingTop=-5;fillColor2=#cccccc;fillColor3=#003377;fieldColor=#ffffff;fieldStroke=#008cff;cancelBtnGradient=#cccccc;cancelBtnColor=#001144;iconBgColor=#bbbbbb;iconColor=#ffffff;align=center;sketch=0;whiteSpace=wrap;');
 			   	bg.vertex = true;
-			   	var text1 = new mxCell('https://www.draw.io/', new mxGeometry(5, 12, 115, 13), s4 + 'anchor;fontSize=8;spacingLeft=3;align=left;spacingTop=2;');
+			    var text1 = new mxCell('https://example.com/', new mxGeometry(5, 12, 115, 13), s4 + 'anchor;fontSize=8;spacingLeft=3;align=left;spacingTop=2;');
 			   	text1.vertex = true;
 			   	bg.insert(text1);
 			   	var text2 = new mxCell('Cancel', new mxGeometry(137, 12, 32, 13), s4 + 'anchor;fontSize=8;fontColor=#ffffff;spacingTop=2;');

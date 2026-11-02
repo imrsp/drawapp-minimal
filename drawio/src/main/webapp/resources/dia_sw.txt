@@ -563,7 +563,7 @@ insertText=Ingiza Maandishi
 inserting=Inaingiza
 installApp=Sakinisha Programu
 invalidFilename=Majina ya mchoro hayapaswi kuwa na herufi zifuatazo: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Leseni yako si halali, tafadhali tazama <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">ukurasa</a> huu.
+invalidLicenseSeeThisPage=Leseni yako si halali, tafadhali tazama ukurasa huu.
 invalidInput=Ingizo batili
 invalidName=Jina batili
 invalidOrMissingFile=Faili batili au haipo

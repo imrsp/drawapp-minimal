@@ -563,7 +563,7 @@ insertText=පෙළ ඇතුළු කරන්න
 inserting=ඇතුළු කරමින්
 installApp=යෙදුම ස්ථාපනය කරන්න
 invalidFilename=රූපසටහන් නම්වල පහත අක්ෂර අඩංගු නොවිය යුතුය: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=ඔබගේ බලපත්‍රය වලංගු නැත, කරුණාකර මෙම <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">පිටුව</a> බලන්න.
+invalidLicenseSeeThisPage=ඔබගේ බලපත්‍රය වලංගු නැත, කරුණාකර මෙම පිටුව බලන්න.
 invalidInput=වලංගු නොවන ආදානය
 invalidName=වලංගු නොවන නම
 invalidOrMissingFile=වලංගු නොවන හෝ නැති ගොනුව

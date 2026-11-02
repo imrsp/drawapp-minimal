@@ -562,7 +562,7 @@ insertText=Tekst invoegen
 inserting=Invoegen
 installApp=App installeren
 invalidFilename=Een Diagramnaam mag niet de volgende tekens bevatten: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Je licentie is ongeldig, bekijk deze <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">pagina</a>.
+invalidLicenseSeeThisPage=Je licentie is ongeldig, bekijk deze pagina.
 invalidInput=Ongeldige invoer
 invalidName=Ongeldige naam
 invalidOrMissingFile=Ongeldig of ontbrekend bestand

@@ -563,7 +563,7 @@ insertText=Įterpti tekstą
 inserting=Įterpimas
 installApp=Įdiegti programėlę
 invalidFilename=Diagramos pavadinimuose neturi būti šių simbolių: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Jūsų licencija negalioja. Peržiūrėkite šį <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">puslapį</a>.
+invalidLicenseSeeThisPage=Jūsų licencija negalioja. Peržiūrėkite šį puslapį.
 invalidInput=Neteisinga įvestis
 invalidName=Neteisingas pavadinimas
 invalidOrMissingFile=Netinkamas failas arba jo nėra

@@ -563,7 +563,7 @@ insertText=ടെക്സ്റ്റ് ചേർക്കുക
 inserting=ചേർക്കുന്നു
 installApp=ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യുക
 invalidFilename=ഡയഗ്രം പേരുകളിൽ ഇനിപ്പറയുന്ന അക്ഷരങ്ങൾ അടങ്ങിയിരിക്കരുത്: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=നിങ്ങളുടെ ലൈസൻസ് അസാധുവാണ്, ദയവായി ഈ <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">പേജ്</a> കാണുക.
+invalidLicenseSeeThisPage=നിങ്ങളുടെ ലൈസൻസ് അസാധുവാണ്, ദയവായി ഈ പേജ് കാണുക.
 invalidInput=അസാധുവായ ഇൻപുട്ട്
 invalidName=അസാധുവായ പേര്
 invalidOrMissingFile=അസാധുവായ അല്ലെങ്കിൽ കാണാത്ത ഫയൽ

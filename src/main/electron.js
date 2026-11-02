@@ -14,6 +14,7 @@ import {PDFDocument, PDFHexString, PDFName} from '@cantoo/pdf-lib';
 import Store from 'electron-store';
 import contextMenu from 'electron-context-menu';
 import {spawn, exec} from 'child_process';
+import {loadBranding} from './branding.js';
 
 let store;
 
@@ -64,6 +65,8 @@ function detectInitialAdaptiveColorsDefault()
 }
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const branding = loadBranding(path.resolve(__dirname, '../../config'));
+const displayedVersion = branding.uiVersion || app.getVersion();
 
 //Command option to disable hardware acceleration
 if (process.argv.indexOf('--disable-acceleration') !== -1)
@@ -578,11 +581,11 @@ function createWindow (opt = {})
 
 	let options = Object.assign(
 	{
-		title: 'drawapp-minimal',
+		title: branding.appName,
 		backgroundColor: '#FFF',
 		width: lastWinSize.width,
 		height: lastWinSize.height,
-		icon: `${codeDir}/images/drawlogo256.png`,
+		icon: `${codeDir}/images/electron-logo.png`,
 		webPreferences: {
 			preload: `${__dirname}/electron-preload.js`,
 			spellcheck: enableSpellCheck,
@@ -631,6 +634,13 @@ function createWindow (opt = {})
 	//Cannot be read before app is ready
 	queryObj['appLang'] = app.getLocale();
 	queryObj['appVersion'] = app.getVersion();
+	queryObj['branding'] = JSON.stringify(branding);
+	queryObj['displayVersion'] = displayedVersion;
+	queryObj['appName'] = branding.appName;
+	queryObj['description'] = branding.description;
+	queryObj['logoUrl'] = branding.logoUrl || '';
+	queryObj['repositoryUrl'] = branding.repositoryUrl;
+	queryObj['repositoryLabel'] = branding.repositoryLabel;
 
 	let ourl = url.format(
 	{
@@ -842,10 +852,11 @@ function createWindow (opt = {})
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() =>
 {
+	app.setName(branding.appName);
 	app.setAboutPanelOptions({
-		applicationName: 'drawapp-minimal',
-		applicationVersion: 'v' + app.getVersion(),
-		copyright: 'Copyright 2026 drawapp-minimal contributors'
+		applicationName: branding.appName,
+		applicationVersion: 'v' + displayedVersion,
+		copyright: branding.copyright
 	});
 
 	// Determine initial defaultAdaptiveColors for the drawio Configuration

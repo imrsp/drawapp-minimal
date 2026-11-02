@@ -563,7 +563,7 @@ insertText=Вставити текст
 inserting=Вставлення
 installApp=Встановити застосунок
 invalidFilename=Назви діаграм не повинні мати такі знаки: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Ваша ліцензія недійсна, будь ласка, прочитайте <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">сторінку</a>.
+invalidLicenseSeeThisPage=Ваша ліцензія недійсна, будь ласка, прочитайте сторінку.
 invalidInput=Недійсне введення
 invalidName=Недійсне ім'я
 invalidOrMissingFile=Файл невірний або відсутній

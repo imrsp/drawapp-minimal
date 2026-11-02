@@ -1,9 +1,12 @@
 {
   "appId": "org.drawapp.minimal",
-  "copyright": "Copyright 2026 drawapp-minimal contributors",
+  "copyright": "Copyright 2026 DrawApp contributors",
+  "productName": "DrawApp",
   "asar": true,
   "files": [
     "**/*",
+    "config/branding.json",
+    "config/branding.local.json",
     "!**/WEB-INF{,/**}",
     "!drawio/src/main/webapp/stencils/**/*.xml",
     "!drawio/src/main/webapp/shapes{,/**}",

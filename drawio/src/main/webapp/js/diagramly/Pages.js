@@ -3360,7 +3360,8 @@ EditorUi.prototype.updateTabContainer = function()
 		}
 
 		var ghLink = document.createElement('a');
-		ghLink.href = 'https://github.com/imrsp/drawapp-minimal';
+		var branding = typeof appBranding !== 'undefined' ? appBranding : {};
+		ghLink.href = branding.repositoryUrl || 'https://github.com/imrsp/drawapp-minimal';
 		ghLink.target = '_blank';
 		ghLink.style.cssText = 'margin-left:auto;display:flex;align-items:center;' +
 			'padding:0 8px;opacity:0.5;flex-shrink:0';
@@ -3368,7 +3369,7 @@ EditorUi.prototype.updateTabContainer = function()
 		ghImg.src = IMAGE_PATH + (Editor.isDarkMode() ?
 			'/github-logo-white.svg' : '/github-logo.svg');
 		ghImg.style.cssText = 'width:18px;height:18px';
-		ghImg.setAttribute('title', 'imrsp/drawapp-minimal');
+		ghImg.setAttribute('title', branding.repositoryLabel || 'imrsp/drawapp-minimal');
 		ghLink.appendChild(ghImg);
 
 		mxEvent.addListener(ghLink, 'mouseenter', function()

@@ -1,9 +1,12 @@
 {
   "appId": "org.drawapp.minimal",
-  "copyright": "Copyright 2026 drawapp-minimal contributors",
+  "copyright": "Copyright 2026 DrawApp contributors",
+  "productName": "DrawApp",
   "asar": true,
   "files": [
     "**/*",
+    "config/branding.json",
+    "config/branding.local.json",
     "!**/WEB-INF{,/**}",
     "!drawio/src/main/webapp/stencils/**/*.xml",
     "!drawio/src/main/webapp/shapes{,/**}",
@@ -31,9 +34,9 @@
     ]
   },
   "appx": {
-    "displayName": "drawapp-minimal",
-    "publisherDisplayName": "drawapp-minimal",
-    "identityName": "drawapp-minimal.drawapp-minimal",
+    "displayName": "${env.DRAWAPP_PRODUCT_NAME}",
+    "publisherDisplayName": "DrawApp",
+    "identityName": "DrawApp.DrawApp",
     "publisher": "CN=9E628CCB-BE04-4557-A5A8-81EC34B09733"
   },
   "afterPack": "build/fuses.mjs",

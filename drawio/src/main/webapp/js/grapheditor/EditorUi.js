@@ -11743,6 +11743,28 @@ EditorUi.prototype.createZoomInput = function(readOnly)
  */
 EditorUi.prototype.createHelpIcon = function(href, noCssClass)
 {
+	// No help icon is rendered when the target is absent or points to an
+	// upstream draw.io site.
+	if (href == null)
+	{
+		var placeholder = document.createElement('span');
+		placeholder.style.display = 'none';
+		return placeholder;
+	}
+
+	try
+	{
+		var hostname = new URL(href, window.location.href).hostname;
+
+		if (/(^|\.)(drawio\.com|draw\.io|diagrams\.net)$/i.test(hostname))
+		{
+			var placeholder = document.createElement('span');
+			placeholder.style.display = 'none';
+			return placeholder;
+		}
+	}
+	catch (e) {}
+
 	var link = document.createElement('img');
 	link.setAttribute('src', Editor.helpImage);
 	link.setAttribute('title', mxResources.get('help') + ' (' + href + ')');

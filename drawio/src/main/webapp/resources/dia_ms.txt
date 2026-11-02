@@ -563,7 +563,7 @@ insertText=Masukkan Teks
 inserting=Memasukkan
 installApp=Pasang Aplikasi
 invalidFilename=Nama gambarajah tidak boleh mengandungi aksara yang berikut: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Lesen anda tidak sah, sila lihat <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">halaman</a> ini.
+invalidLicenseSeeThisPage=Lesen anda tidak sah, sila lihat halaman ini.
 invalidInput=Input tidak sah
 invalidName=Nama tidak sah
 invalidOrMissingFile=Fail tidak sah atau hilang

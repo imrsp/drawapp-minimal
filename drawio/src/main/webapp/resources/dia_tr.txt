@@ -563,7 +563,7 @@ insertText=Metin ekle
 inserting=Ekleniyor
 installApp=Uygulamayı Yükle
 invalidFilename=Diyagram adları şu karakterleri içermemelidir: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Lisansınız geçersiz, lütfen bu <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">sayfaya</a> bakınız.
+invalidLicenseSeeThisPage=Lisansınız geçersiz, lütfen bu sayfaya bakınız.
 invalidInput=Geçersiz giriş
 invalidName=Geçersiz isim
 invalidOrMissingFile=Geçersiz veya olmayan dosya

@@ -563,7 +563,7 @@ insertText=मजकूर घाला
 inserting=घालत आहे
 installApp=अॅप स्थापित करा
 invalidFilename=आकृती नावांमध्ये खालील वर्ण नसावेत: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=तुमचा परवाना अवैध आहे, कृपया हे <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">पृष्ठ</a> पहा.
+invalidLicenseSeeThisPage=तुमचा परवाना अवैध आहे, कृपया हे पृष्ठ पहा.
 invalidInput=अवैध इनपुट
 invalidName=अवैध नाव
 invalidOrMissingFile=अवैध किंवा गहाळ फाइल

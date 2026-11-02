@@ -563,7 +563,7 @@ insertText=टेक्स्ट डालें
 inserting=डाला जा रहा है
 installApp=ऐप इंस्टॉल करें
 invalidFilename=डायग्राम नामों में निम्नलिखित वर्ण नहीं होने चाहिए: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=आपका लाइसेंस अमान्य है, कृपया यह <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">पृष्ठ</a> देखें।
+invalidLicenseSeeThisPage=आपका लाइसेंस अमान्य है, कृपया यह पृष्ठ देखें।
 invalidInput=अमान्य इनपुट
 invalidName=अमान्य नाम
 invalidOrMissingFile=अमान्य या गुम फ़ाइल

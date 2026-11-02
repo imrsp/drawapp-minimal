@@ -563,7 +563,7 @@ insertText=টেক্সট সন্নিবেশ করুন
 inserting=সন্নিবেশ করা হচ্ছে
 installApp=অ্যাপ ইনস্টল করুন
 invalidFilename=ডায়াগ্রামের নামে নিম্নলিখিত অক্ষরগুলি থাকা উচিত নয়: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=আপনার লাইসেন্স অবৈধ, অনুগ্রহ করে এই <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">পৃষ্ঠা</a> দেখুন।
+invalidLicenseSeeThisPage=আপনার লাইসেন্স অবৈধ, অনুগ্রহ করে এই পৃষ্ঠা দেখুন।
 invalidInput=অবৈধ ইনপুট
 invalidName=অবৈধ নাম
 invalidOrMissingFile=অবৈধ বা অনুপস্থিত ফাইল

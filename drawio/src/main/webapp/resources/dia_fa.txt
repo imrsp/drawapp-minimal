@@ -563,7 +563,7 @@ insertText=‫وارد کردن متن‬
 inserting=‫وارد کردن‬
 installApp=‫نصب برنامه‬
 invalidFilename=‫نامهای نمودارها نباید شامل کاراکترهای زیر باشد: \ / | : ; { } < > & + ? = "‬
-invalidLicenseSeeThisPage=‫مجوز شما نامعتبر است، لطفاً این <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">صفحه</a> را ببینید.‬
+invalidLicenseSeeThisPage=‫مجوز شما نامعتبر است، لطفاً این صفحه را ببینید.‬
 invalidInput=‫ورودی نامعتبر‬
 invalidName=‫نام نامعتبر‬
 invalidOrMissingFile=‫فایل یا غیرمعتبر است یا وجود ندارد‬

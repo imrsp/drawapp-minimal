@@ -5,7 +5,6 @@
 /**
  * URL Parameters and protocol description are here:
  *
- * https://www.drawio.com/doc/faq/supported-url-parameters
  *
  * Parameters for developers:
  *
@@ -38,6 +37,21 @@ var urlParams = (function()
     
     return result;
 })();
+
+// Desktop-only branding is passed as individual query parameters by Electron.
+// Read it here, after URL parameters are available and before app.min.js loads.
+if (typeof window !== 'undefined')
+{
+	window.appBranding = {
+		appName: decodeURIComponent(urlParams['appName'] || ''),
+		description: decodeURIComponent(urlParams['description'] || ''),
+		uiVersion: decodeURIComponent(urlParams['displayVersion'] || ''),
+		logoUrl: decodeURIComponent(urlParams['logoUrl'] || ''),
+		repositoryUrl: decodeURIComponent(urlParams['repositoryUrl'] || ''),
+		repositoryLabel: decodeURIComponent(urlParams['repositoryLabel'] || '')
+	};
+	window.appDisplayVersion = window.appBranding.uiVersion || urlParams['appVersion'];
+}
 
 // Forces CDN caches by passing URL parameters via URL hash
 if (window.location.hash != null && window.location.hash.substring(0, 2) == '#P')

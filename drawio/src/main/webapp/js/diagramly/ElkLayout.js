@@ -188,7 +188,6 @@ ElkLayoutBindings._saveSettings = function()
 
 // End-user help for the layout dialogs — the docs site has one page per
 // layout type, selected via the per-algorithm path suffix below.
-ElkLayoutBindings.HELP_URL = 'https://www.drawio.com/docs/manual/layouts/';
 ElkLayoutBindings.HELP_ANCHORS = {layered: 'flow-layouts/', mrtree: 'tree-layouts/',
 	radial: 'radial-tree-layout/', force: 'organic-layout/', stress: 'organic-layout/'};
 
@@ -822,8 +821,7 @@ ElkLayoutBindings.runWithDialog = function(editorUi, algorithm, baseOptions, dia
 	}
 
 	var dlg = new CustomDialog(editorUi, div, applyFn, onCancel || null,
-		mxResources.get('apply'), ElkLayout.HELP_URL +
-		(ElkLayout.HELP_ANCHORS[algorithm] || ''), resetBtn);
+		mxResources.get('apply'), null, resetBtn);
 	editorUi.showDialog(dlg.container, 360, null, true, true);
 };
 

@@ -563,7 +563,7 @@ insertText=Allagaq ilissiguk
 inserting=Ilissinneqarpoq
 installApp=App-i ikkussilaaruk
 invalidFilename=Diagrammit aqqi makku atortariaqanngilatit: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Akuersissutit atuuttunngilaq, takuuk una <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">qupperneq</a>.
+invalidLicenseSeeThisPage=Akuersissutit atuuttunngilaq, takuuk una qupperneq.
 invalidInput=Allagaq atuuttunngilaq
 invalidName=Aqqa atuuttunngilaq
 invalidOrMissingFile=Fili atuuttunngilaq imaluunniit pisanngilaq

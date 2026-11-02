@@ -563,7 +563,7 @@ insertText=テキストを挿入
 inserting=挿入中
 installApp=アプリをインストール
 invalidFilename=ダイアグラム名に次の文字を含めることはできません。 \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=ライセンスが無効です。こちらの<a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">ページ</a>をご確認ください。
+invalidLicenseSeeThisPage=ライセンスが無効です。こちらのページをご確認ください。
 invalidInput=無効な入力
 invalidName=無効な名前です
 invalidOrMissingFile=無効または不明なファイル

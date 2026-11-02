@@ -331,10 +331,7 @@ DriveClient.prototype.execute = function(fn, cancelFn)
 				
 				this.logout();
 				
-				this.ui.showError(mxResources.get('error'), msg, mxResources.get('help'), mxUtils.bind(this, function()
-				{
-					this.ui.openLink('https://www.drawio.com/doc/faq/gsuite-authorisation-troubleshoot');
-				}), null, mxResources.get('ok'));
+				this.ui.showError(mxResources.get('error'), msg, mxResources.get('ok'));
 			}), remember);
 		}), (cancelFn != null) ? function()
 		{

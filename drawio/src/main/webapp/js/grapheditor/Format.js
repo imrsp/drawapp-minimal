@@ -5777,13 +5777,6 @@ TextFormatPanel.prototype.addFont = function(container)
 		extraPanel.appendChild(fitOpt);
 	}
 
-	if (!ui.isOffline() || mxClient.IS_CHROMEAPP || EditorUi.isElectronApp)
-	{
-		convertToSvg.getElementsByTagName('span')[0].style.maxWidth = '172px';
-		convertToSvg.appendChild(ui.menus.createHelpLink(
-			'https://www.drawio.com/docs/manual/text/svg-labels/'));
-	}
-
 	var spacingPanel = this.createPanel();
 	spacingPanel.style.height = '86px';
 

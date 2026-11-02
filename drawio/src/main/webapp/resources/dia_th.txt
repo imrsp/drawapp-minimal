@@ -563,7 +563,7 @@ insertText=แทรกข้อความ
 inserting=การแทรก
 installApp=ติดตั้งแอป
 invalidFilename=ชื่อแผนภาพจะต้องไม่มีเครื่องหมายเหล่านี้ \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=ใบอนุญาตของคุณไม่ถูกต้อง โปรดดู<a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">หน้านี้</a>
+invalidLicenseSeeThisPage=ใบอนุญาตของคุณไม่ถูกต้อง โปรดดูหน้านี้
 invalidInput=ข้อมูลไม่ถูกต้อง
 invalidName=ชื่อที่ใช้ไม่ได้
 invalidOrMissingFile=ไฟล์ไม่ถูกต้องหรือไฟล์สูญหาย

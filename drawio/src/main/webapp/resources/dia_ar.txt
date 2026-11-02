@@ -553,7 +553,7 @@ insertText=‫إضافة نص‬
 inserting=‫إضافة‬
 installApp=‫تثبيت التطبيق‬
 invalidFilename=‫يجب ألا تحتوي أسماء المخططات على الأحرف التالية: \ / | : ; { } < > & + ? = "‬
-invalidLicenseSeeThisPage=‫ترخيصك غير صالح، يرجى مراجعة هذه <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">الصفحة</a>.‬
+invalidLicenseSeeThisPage=‫ترخيصك غير صالح، يرجى مراجعة هذه الصفحة.‬
 invalidInput=‫إدخال غير صالح‬
 invalidName=‫اسم غير صالح‬
 invalidOrMissingFile=‫ملف غير صالح أو غير موجود‬

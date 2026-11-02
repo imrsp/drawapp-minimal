@@ -1,8 +1,8 @@
 {
   "name": "drawapp-minimal",
-  "productName": "drawapp-minimal",
+  "productName": "DrawApp",
   "version": "1.0.0",
-  "description": "drawapp-minimal desktop diagram editor",
+  "description": "DrawApp desktop diagram editor",
   "exports": "./src/main/electron.js",
   "type": "module",
   "main": "src/main/electron.js",
@@ -11,13 +11,13 @@
   },
   "scripts": {
     "start": "electron .",
-    "test": "node --test src/test/cli-args.test.js src/test/msi-project-created.test.js src/test/window-bounds.test.js src/test/window-lifecycle.test.js",
-    "build:mac": "electron-builder --config electron-builder-linux-mac.json --mac dir --publish never",
-    "build:win": "electron-builder --config electron-builder-win.json --publish never",
-    "build:win-arm64": "electron-builder --config electron-builder-win-arm64.json --publish never",
-    "build:appx": "electron-builder --config electron-builder-appx.json --publish never",
-    "build:linux": "electron-builder --config electron-builder-linux-mac.json --linux --publish never",
-    "build:snap": "electron-builder --config electron-builder-snap.json --publish never"
+    "test": "node --test src/test/branding.test.js src/test/cli-args.test.js src/test/msi-project-created.test.js src/test/window-bounds.test.js src/test/window-lifecycle.test.js",
+    "build:mac": "node scripts/build.js mac",
+    "build:win": "node scripts/build.js win",
+    "build:win-arm64": "node scripts/build.js winArm64",
+    "build:appx": "node scripts/build.js appx",
+    "build:linux": "node scripts/build.js linux",
+    "build:snap": "node scripts/build.js snap"
   },
   "keywords": [
     "drawapp-minimal",

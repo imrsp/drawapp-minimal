@@ -563,7 +563,7 @@ insertText=Vstavi besedilo
 inserting=Vstavljanje
 installApp=Namesti aplikacijo
 invalidFilename=Imena diagramov ne smejo vsebovati naslednjih znakov: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Vaša licenca ni veljavna, prosimo oglejte si to <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">stran</a>.
+invalidLicenseSeeThisPage=Vaša licenca ni veljavna, prosimo oglejte si to stran.
 invalidInput=Neveljaven vnos
 invalidName=Neveljavno ime
 invalidOrMissingFile=Neveljavna ali manjkajoča datoteka

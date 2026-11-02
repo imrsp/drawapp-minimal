@@ -1483,11 +1483,6 @@ var ColorDialog = function(editorUi, color, apply, cancelFn, defaultColor, defau
 		buttons.style.justifyContent = 'end';
 		buttons.style.marginTop = '34px';
 
-		if (!editorUi.isOffline())
-		{
-			buttons.appendChild(editorUi.createHelpIcon('https://www.drawio.com/docs/manual/editor/appearance/adaptive-colours/'));
-		}
-
 		var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
 		{
 			editorUi.hideDialog();
@@ -2176,16 +2171,17 @@ var AboutDialog = function(editorUi)
 	var div = document.createElement('div');
 	div.setAttribute('align', 'center');
 	var h3 = document.createElement('h3');
-	mxUtils.write(h3, mxResources.get('about') + ' GraphEditor');
+	mxUtils.write(h3, mxResources.get('about') + ' ' + (typeof appBranding !== 'undefined' && appBranding.appName ? appBranding.appName : 'GraphEditor'));
 	div.appendChild(h3);
 	var img = document.createElement('img');
 	img.style.border = '0px';
 	img.setAttribute('width', '176');
 	img.setAttribute('width', '151');
-	img.setAttribute('src', IMAGE_PATH + '/logo.png');
+	img.setAttribute('src', (typeof appBranding !== 'undefined' && appBranding.logoUrl) || IMAGE_PATH + '/electron-logo.svg');
+	img.onerror = function() { img.onerror = null; img.src = IMAGE_PATH + '/electron-logo.svg'; };
 	div.appendChild(img);
 	mxUtils.br(div);
-	mxUtils.write(div, 'Powered by mxGraph ' + mxClient.VERSION);
+	mxUtils.write(div, 'Version ' + (window.appDisplayVersion || (typeof urlParams !== 'undefined' && urlParams['appVersion'] ? urlParams['appVersion'] : EditorUi.VERSION)));
 	mxUtils.br(div);
 	var link = document.createElement('a');
 	link.setAttribute('href', 'http://www.jgraph.com/');
@@ -3291,7 +3287,7 @@ EditDiagramDialog.showNewWindowOption = true;
 /**
  * URL for the user-facing documentation of this dialog.
  */
-EditDiagramDialog.helpLink = 'https://www.drawio.com/docs/manual/advanced/diagram-source-edit/';
+EditDiagramDialog.helpLink = null;
 
 /**
  * Constructs a new export dialog.

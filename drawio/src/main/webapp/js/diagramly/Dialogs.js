@@ -314,12 +314,9 @@ var StorageDialog = function(editorUi, fn, rowLimit)
 				p3.style.padding = '7px';
 				p3.style.fontSize = '9pt';
 				p3.style.marginTop = '-14px';
-				p3.innerHTML = '<a style="background-color:light-dark(var(--border-color), var(--dark-border-color));' +
-					'padding:6px;color:light-dark(var(--strong-text-color), var(--dark-strong-text-color));' +
-					'text-decoration:none;" ' +
-					'href="https://www.drawio.com/doc/faq/google-drive-connection-problems" target="_blank">' +
-					'<img border="0" src="' + mxGraph.prototype.warningImage.src + '" align="absmiddle" ' +
-					'style="margin-top:-4px"> ' + mxResources.get('googleDriveMissingClickHere') + '</a>';
+				p3.appendChild(mxUtils.createImage(mxGraph.prototype.warningImage.src));
+				p3.appendChild(document.createTextNode(' ' +
+					mxResources.get('googleDriveMissingClickHere')));
 				div.appendChild(p3);
 
 				// The dialog's height follows its content with the notice
@@ -2144,15 +2141,6 @@ var ParseDialog = function(editorUi, title, defaultType)
 		buttons.appendChild(warning);
 	}
 
-	if ((!editorUi.isOffline() || mxClient.IS_CHROMEAPP) &&
-		(defaultType == 'mermaid' || defaultType == 'plantUml'))
-	{
-		buttons.appendChild(editorUi.createHelpIcon(
-			(defaultType == 'mermaid') ?
-				'https://www.drawio.com/docs/manual/mermaid/' :
-				'https://plantuml.com/'));
-	}
-
 	buttons.appendChild(typeSelect);
 
 	mxEvent.addListener(typeSelect, 'change', function()
@@ -3021,19 +3009,8 @@ var NewDialog = function(editorUi, compact, showName, callback, createOnly, canc
 	editGenerate.style.visibility = 'hidden';
 	editGenerate.style.left = '0px';
 
-	var helpGenerate = magnifyImage.cloneNode(true);
-	helpGenerate.setAttribute('src', Editor.helpImage);
-	helpGenerate.setAttribute('title', mxResources.get('help'));
-
-	mxEvent.addListener(helpGenerate, 'click', function(evt)
-	{
-		editorUi.openLink('https://www.drawio.com/blog/write-query-generate-diagram');
-		mxEvent.consume(evt);
-	});
-	
 	generateForm.appendChild(generateInput);
 	generateForm.appendChild(generateButton);
-	generateForm.appendChild(helpGenerate);
 	generateForm.style.display = 'none';
 
 	function createGenerate()
@@ -4833,12 +4810,6 @@ var SaveDialog = function(editorUi, title, saveFn, disabledModes, data, mimeType
 	btns.style.textAlign = 'right';
 	btns.style.marginTop = '20px';
 
-	if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP)
-	{
-		btns.appendChild(editorUi.createHelpIcon(
-			'https://www.drawio.com/doc/faq/save-file-formats'));
-	}
-
 	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
 	{
 		editorUi.hideDialog();
@@ -6279,11 +6250,6 @@ var LinkDialog = function(editorUi, initialValue, btnLabel, fn, showPages,
 	btns.style.marginTop = '34px';
 	btns.style.textAlign = 'right';
 
-	if (!editorUi.isOffline())
-	{
-		btns.appendChild(editorUi.createHelpIcon('https://www.drawio.com/doc/faq/custom-links'));
-	}
-
 	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
 	{
 		editorUi.hideDialog();
@@ -6565,10 +6531,6 @@ LinkDialog.sameCells = function(a, b)
 };
 
 // End-user manual for the animation / custom-action editors.
-var ANIMATION_HELP_URL =
-	'https://www.drawio.com/docs/manual/links-tooltips-tags/animations-custom-actions/';
-
-
 /**
  * Polished selector styles (cell-list chip, tag pills, tag picker popover).
  * Installed once on first use, then shared by every dialog that calls
@@ -9872,11 +9834,6 @@ var FindWindow = function(ui, x, y, w, h, withReplace)
 	mxUtils.write(regexLabel, mxResources.get('regularExpression'));
 	div.appendChild(regexLabel);
 	
-    var help = ui.menus.createHelpLink('https://www.drawio.com/doc/faq/find-shapes');
-    help.style.position = 'relative';
-    help.style.marginLeft = '6px';
-    div.appendChild(help);
-    
 	mxUtils.br(div);
 
 	// Shows the position of the current match and the number of matches
@@ -13719,15 +13676,6 @@ var ChatWindow = function(editorUi, x, y, w, h)
 	this.window.setResizable(true);
 	this.window.setClosable(true);
 
-	// Adds help icon to title bar
-	if (!editorUi.isOffline())
-	{
-		var icon = editorUi.createHelpIcon('https://www.drawio.com/doc/faq/configure-ai-options');
-		icon.style.cursor = 'help';
-		icon.style.opacity = '0.5';
-		this.window.buttons.insertBefore(icon, this.window.buttons.firstChild);
-	}
-
 	this.window.addListener('show', mxUtils.bind(this, function()
 	{
 		this.window.fit();
@@ -13761,13 +13709,6 @@ var ChatWindow = function(editorUi, x, y, w, h)
 var TagsWindow = function(editorUi, x, y, w, h)
 {
 	var graph = editorUi.editor.graph;
-	var helpButton = null;
-
-	if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP)
-	{
-		helpButton = editorUi.menus.createHelpLink('https://www.drawio.com/blog/tags-in-diagrams');
-	}
-
 	var tagsComponent = editorUi.editor.graph.createTagsDialog(mxUtils.bind(this, function()
 	{
 		return this.window.isVisible();
@@ -13809,12 +13750,12 @@ var TagsWindow = function(editorUi, x, y, w, h)
 						graph.addTagsForCells(graph.getSelectionCells(), tags);
 					}
 				}
-			}, mxResources.get('tags'), null, null, 'https://www.drawio.com/blog/tags-in-diagrams');
+			}, mxResources.get('tags'), null, null, null);
 			
 			editorUi.showDialog(dlg.container, 320, 80, true, true);
 			dlg.init();
 		}
-	}, helpButton);
+	}, null);
 
 	var div = tagsComponent.div;
 	this.window = new mxWindow(mxResources.get('tags'), div, x, y, w, h, true, true);
@@ -17001,9 +16942,6 @@ var AnimationDialog = function(editorUi, x, y, w, h, opts)
 		}
 	};
 
-	// Help button — opens the end-user manual in a new window.
-	actionsLeft.appendChild(editorUi.createHelpIcon(ANIMATION_HELP_URL));
-
 	var thisDialog = this;
 
 	// Persists state for the current mode. Page mode writes JSON to the
@@ -18537,11 +18475,6 @@ var PluginsDialog = function(editorUi, addFn, delFn, closeOnly)
 	var buttons = document.createElement('div');
 	buttons.style.marginTop = '34px';
 	buttons.style.textAlign = 'right';
-
-	if (!editorUi.isOffline())
-	{
-		buttons.appendChild(editorUi.createHelpIcon('https://www.drawio.com/doc/faq/plugins'));
-	}
 
 	if (editorUi.editor.cancelFirst)
 	{
@@ -20466,12 +20399,6 @@ var EditShapeDialog = function(editorUi, cell, title)
 	btns.style.bottom = '6px';
 	btns.style.height = '30px';
 	btns.style.width = '100%';
-	
-	if (!editorUi.isOffline())
-	{
-		btns.appendChild(editorUi.createHelpIcon(
-			'https://www.drawio.com/doc/faq/shape-complex-create-edit'));
-	}
 	
 	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
 	{
@@ -23369,12 +23296,6 @@ var FontDialog = function(editorUi, curFontname, curUrl, curType, fn)
 		mxResources.get('googleFonts'),
 		false, null, null, null, true, 'current-fontdialog', true);
 
-	if (!editorUi.isOffline() || EditorUi.isElectronApp)
-	{
-		googleFontRadio.checkRow.appendChild(
-			editorUi.createHelpIcon('https://fonts.google.com/'));
-	}
-
 	var googleFontInput = document.createElement('input');
 	googleFontInput.setAttribute('type', 'text');
 
@@ -23490,12 +23411,6 @@ var FontDialog = function(editorUi, curFontname, curUrl, curType, fn)
 	btns.style.marginTop = '34px';
 	btns.style.textAlign = 'right';
 	btns.style.whiteSpace = 'nowrap';
-
-	if (!editorUi.isOffline())
-	{
-		btns.appendChild(editorUi.createHelpIcon(
-			'https://www.drawio.com/blog/external-fonts'));
-	}
 
 	var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
 	{
@@ -24034,9 +23949,6 @@ var FilePropertiesDialog = function(editorUi, publicLink)
 
 		var collabInput = editorUi.addCheckbox(settingsSection, mxResources.get('realtimeCollaboration'),
 			initialCollab, null, null, null, null, null, true);
-		collabInput.checkRow.appendChild(editorUi.menus.createHelpLink(
-			'https://www.drawio.com/docs/manual/collaboration/concurrent-editing/#disable-real-time-collaboration'));
-
 		addApply(function(success, error)
 		{
 			if (collabInput.checked != initialCollab)
@@ -24941,12 +24853,6 @@ var ConnectionPointsDialog = function(editorUi, cell)
 		buttons.style.flexShrink = '0';
 		buttons.style.marginTop = '10px';
 		buttons.style.textAlign = 'right';
-
-		if (!editorUi.isOffline())
-		{
-			buttons.appendChild(editorUi.createHelpIcon(
-				'https://www.drawio.com/doc/faq/shape-connection-points-customise'));
-		}
 
 		var connectableLabel = document.createElement('label');
 		connectableLabel.style.cssFloat = 'left';

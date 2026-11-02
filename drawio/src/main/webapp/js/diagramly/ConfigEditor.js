@@ -325,7 +325,7 @@ DrawioConfigEditor.install = function(container, options)
 		],
 		'export-toggles': [
 			{ key: 'compressXml' },
-			{ key: 'compressStyles', experimental: true, helpLink: 'https://www.drawio.com/docs/reference/style-compression/' },
+			{ key: 'compressStyles', experimental: true, helpLink: null },
 			{ key: 'includeDiagram' },
 			{ key: 'enableExportUrl' },
 			{ key: 'lockdown' },
@@ -398,8 +398,7 @@ DrawioConfigEditor.install = function(container, options)
 			{
 				var badge = toggle.experimental ?
 					' <span class="toggle-field__experimental" title="Experimental feature">experimental</span>' : '';
-				var helpIcon = toggle.helpLink ?
-					' <a class="toggle-field__helplink" href="' + toggle.helpLink + '" target="_blank" rel="noopener" title="Learn more">?</a>' : '';
+				var helpIcon = '';
 
 				// Names and help texts come from the resources and are
 				// filled in as text nodes by localizeToggles - resource

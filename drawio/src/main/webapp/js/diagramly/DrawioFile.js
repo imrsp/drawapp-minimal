@@ -3314,8 +3314,7 @@ DrawioFile.prototype.setConflictStatus = function(message, fn)
 {
 	this.ui.editor.setStatus('<div title="'+ message + '" ' + ((fn != null) ?
 		'data-action="statusFunction"' : '') + ' class="geStatusAlert">' + message +
-		'<img data-link="https://www.drawio.com/doc/faq/synchronize" src="' +
-		Editor.helpImage + '" style="margin-left:2px;cursor:help;"/></div>', fn);
+		'</div>', fn);
 };
 
 /**

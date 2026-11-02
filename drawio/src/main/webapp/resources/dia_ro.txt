@@ -563,7 +563,7 @@ insertText=Inserează text
 inserting=Se inserează
 installApp=Instalează aplicație
 invalidFilename=Numele diagramelor nu trebuie să conțină următoarele caractere: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Cheia ta de licență este nevalidă, consultă această <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">pagină</a>.
+invalidLicenseSeeThisPage=Cheia ta de licență este nevalidă, consultă această pagină.
 invalidInput=Intrare nevalidă
 invalidName=Nume nevalid
 invalidOrMissingFile=Fișier nevalid sau inexistent

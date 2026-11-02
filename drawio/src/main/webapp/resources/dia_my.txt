@@ -563,7 +563,7 @@ insertText=စာသားထည့်ရန်
 inserting=ထည့်နေသည်
 installApp=အက်ပ်ထည့်သွင်းရန်
 invalidFilename=ပုံကြမ်းအမည်များတွင် အောက်ပါစာလုံးများ မပါဝင်ရပါ: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=သင့်လိုင်စင်မမှန်ကန်ပါ၊ ကျေးဇူးပြု၍ ဤ<a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">စာမျက်နှာ</a>ကို ကြည့်ပါ။
+invalidLicenseSeeThisPage=သင့်လိုင်စင်မမှန်ကန်ပါ၊ ကျေးဇူးပြု၍ ဤစာမျက်နှာကို ကြည့်ပါ။
 invalidInput=မမှန်ကန်သော ထည့်သွင်းမှု
 invalidName=မမှန်ကန်သော အမည်
 invalidOrMissingFile=မမှန်ကန်သော သို့မဟုတ် ပျောက်ဆုံးနေသော ဖိုင်

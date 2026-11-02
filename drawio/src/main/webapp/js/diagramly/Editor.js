@@ -3038,7 +3038,6 @@
     
 	/**
 	 * Global configuration of the Editor
-	 * see https://www.drawio.com/doc/faq/configure-diagram-editor
 	 * 
 	 * For defaultVertexStyle, defaultEdgeStyle and defaultLibraries, this must be called before
 	 * mxSettings.load via global config variable window.mxLoadSettings = false.
@@ -7423,7 +7422,7 @@
 	 */
 	if (window.ColorDialog)
 	{
-		FilenameDialog.filenameHelpLink = 'https://www.drawio.com/doc/faq/save-file-formats'; 
+		FilenameDialog.filenameHelpLink = null;
 		
 		var colorDialogAddRecentColor = ColorDialog.addRecentColor;
 		
@@ -7787,15 +7786,6 @@
 				
 				div.appendChild(option);
 				
-				if (EditorUi.isElectronApp)
-				{
-					option.appendChild(ui.menus.createMathHelpIcon());
-				}
-				else if (!ui.isOffline() || mxClient.IS_CHROMEAPP)
-				{
-					option.appendChild(ui.menus.createHelpLink(
-						'https://www.drawio.com/doc/faq/math-typesetting'));
-				}
 			}
 			
 			return div;
@@ -13978,12 +13968,6 @@
 		mxUtils.write(span, mxResources.get('shadows'));
 		shadowsRow.appendChild(span);
 
-		if (!editorUi.isOffline() || mxClient.IS_CHROMEAPP)
-		{
-			shadowsRow.appendChild(editorUi.createHelpIcon(
-				'https://www.drawio.com/docs/manual/export/print-diagram/#shadows-in-print-and-pdf-export'));
-		}
-
 		// Hides shadows option if not supported
 		if (!Editor.enableShadowOption)
 		{
@@ -14124,12 +14108,6 @@
 			return (fn != null) ? fn(!print, args) : editorUi.print(!print, args);
 		};
 
-		if ((!editorUi.isOffline() || mxClient.IS_CHROMEAPP) && fn == null)
-		{
-			buttons.appendChild(editorUi.createHelpIcon(
-				'https://www.drawio.com/doc/faq/print-diagram'));
-		}
-		
 		var cancelBtn = mxUtils.button(mxResources.get('cancel'), function()
 		{
 			editorUi.hideDialog();

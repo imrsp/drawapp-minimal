@@ -322,7 +322,6 @@ App.startTime = new Date();
 
 /**
  * Defines plugin IDs for loading via p URL parameter. Update the table at
- * https://www.drawio.com/doc/faq/supported-url-parameters
  */
 App.pluginRegistry = {'ex': 'plugins/explore.js',
 	'ac': 'plugins/connect.js', 'acj': 'plugins/connectJira.js',
@@ -2493,22 +2492,6 @@ App.prototype.isChromelessDiagramPadded = function()
 {
 	return window.self === window.top &&
 		EditorUi.prototype.isChromelessDiagramPadded.apply(this, arguments);
-};
-
-/**
- * Shows a footer to download the desktop version once per session.
- */
-App.prototype.searchHelp = function(prompt)
-{
-	var link = 'https://www.drawio.com/search?src=' +
-		(EditorUi.isElectronApp ? 'DESKTOP' : encodeURIComponent(location.host)) + 
-			'&search=' + encodeURIComponent(prompt);
-	this.openLink(link);
-	
-	if (prompt.length > 0)
-	{
-		EditorUi.logEvent({category: 'SEARCH-HELP', action: 'search', label: prompt});
-	}
 };
 
 /**
@@ -8944,7 +8927,8 @@ App.prototype.updateHeader = function()
 		}));
 
 		this.initKeyboardButton(this.appIcon);
-		this.appIcon.setAttribute('aria-label', EditorUi.isElectronApp ? 'drawapp-minimal' : mxResources.get('draw.io'));
+		this.appIcon.setAttribute('aria-label', EditorUi.isElectronApp ?
+			(typeof appBranding !== 'undefined' && appBranding.appName ? appBranding.appName : 'drawapp-minimal') : mxResources.get('draw.io'));
 
 		mxEvent.addListener(this.appIcon, 'mouseover', mxUtils.bind(this, function()
 		{

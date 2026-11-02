@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+/config/branding.local.json
 
 # Build output and packaged application artifacts
 /dist/

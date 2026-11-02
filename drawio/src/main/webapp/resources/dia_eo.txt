@@ -563,7 +563,7 @@ insertText=Enmeti Tekston
 inserting=Enmetante
 installApp=Instali Aplikaĵon
 invalidFilename=Diagramnomoj ne rajtas enhavi la sekvajn signojn: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Via licenco estas nevalida, bonvolu vidi ĉi tiun <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">paĝon</a>.
+invalidLicenseSeeThisPage=Via licenco estas nevalida, bonvolu vidi ĉi tiun paĝon.
 invalidInput=Nevalida enigo
 invalidName=Nevalida nomo
 invalidOrMissingFile=Nevalida aŭ mankanta dosiero

@@ -563,7 +563,7 @@ insertText=Umetni tekst
 inserting=Umetanje
 installApp=Instaliraj aplikaciju
 invalidFilename=Imena dijagrama ne smiju sadržavati sljedeće znakove: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=Vaša licenca nije validna, molimo pogledajte ovu <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">stranicu</a>.
+invalidLicenseSeeThisPage=Vaša licenca nije validna, molimo pogledajte ovu stranicu.
 invalidInput=Neispravan unos
 invalidName=Neispravan naziv
 invalidOrMissingFile=Neispravan ili nepostojeći fajl

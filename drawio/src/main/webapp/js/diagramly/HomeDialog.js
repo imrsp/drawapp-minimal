@@ -672,7 +672,8 @@ HomeDialog.prototype.createCard = function(file)
 	var showPlaceholder = function()
 	{
 		img.className = 'geHomePlaceholder';
-		img.setAttribute('src', IMAGE_PATH + '/drawlogo48.png');
+	img.setAttribute('src', (typeof appBranding !== 'undefined' && appBranding.logoUrl) || IMAGE_PATH + '/electron-logo.svg');
+	img.onerror = function() { img.onerror = null; img.src = IMAGE_PATH + '/electron-logo.svg'; };
 	};
 
 	if (src != null)

@@ -1,0 +1,9 @@
+{
+  "appName": "DrawApp",
+  "description": "DrawApp desktop diagram editor",
+  "uiVersion": null,
+  "logoUrl": "images/electron-logo.png",
+  "repositoryUrl": "https://github.com/imrsp/drawapp-minimal",
+  "repositoryLabel": "imrsp/drawapp-minimal",
+  "copyright": null
+}

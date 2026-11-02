@@ -563,7 +563,7 @@ insertText=உரையைச் செருகு
 inserting=செருகும்
 installApp=பயன்பாட்டை நிறுவு
 invalidFilename=வரைபட பெயர்களில் பின்வரும் எழுத்துக்கள் இருக்கக்கூடாது: \ / | :; {} HTML_LABEL_FILTERED & +? = "
-invalidLicenseSeeThisPage=உங்கள் உரிமம் தவறானது, தயவுசெய்து இந்த <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">பக்கத்தை</a> காண்க
+invalidLicenseSeeThisPage=உங்கள் உரிமம் தவறானது, தயவுசெய்து இந்த பக்கத்தை காண்க
 invalidInput=தவறான உள்ளீடு
 invalidName=தவறான பெயர்
 invalidOrMissingFile=தவறான அல்லது காணாமல் போன கோப்பு

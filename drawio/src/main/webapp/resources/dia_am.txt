@@ -563,7 +563,7 @@ insertText=ጽሁፍ አስገባ
 inserting=በማስገባት ላይ
 installApp=አፕ ይጭኑ
 invalidFilename=የዳያግራም ስሞች እነዚህን ቁምፊዎች መያዝ የለባቸውም: \ / | : ; { } < > & + ? = "
-invalidLicenseSeeThisPage=ፍቃድዎ ልክ አይደለም፣ እባክዎ ይህን <a target="_blank" href="https://www.drawio.com/doc/faq/license-drawio-confluence-jira-cloud">ገጽ</a> ይመልከቱ።
+invalidLicenseSeeThisPage=ፍቃድዎ ልክ አይደለም፣ እባክዎ ይህን ገጽ ይመልከቱ።
 invalidInput=የተሳሳተ ግቤት
 invalidName=የተሳሳተ ስም
 invalidOrMissingFile=የተሳሳተ ወይም የጠፋ ፋይል

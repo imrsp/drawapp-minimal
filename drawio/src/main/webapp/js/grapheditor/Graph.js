@@ -1982,7 +1982,6 @@ Graph.foreignObjectWarningText = 'Text is not SVG - cannot display';
 /**
  * Link for foreign object warning.
  */
-Graph.foreignObjectWarningLink = 'https://www.drawio.com/doc/faq/svg-export-text-problems';
 
 /**
  * 
@@ -40827,21 +40826,8 @@ if (typeof mxVertexHandler !== 'undefined')
 				var sw = canvas.createElement('switch');
 				var g1 = canvas.createElement('g');
 				g1.setAttribute('requiredFeatures', 'http://www.w3.org/TR/SVG11/feature#Extensibility');
-				var a = canvas.createElement('a');
-				a.setAttribute('transform', 'translate(0,-5)');
-				
-				// Workaround for implicit namespace handling in HTML5 export, IE adds NS1 namespace so use code below
-				// in all IE versions except quirks mode. KNOWN: Adds xlink namespace to each image tag in output.
-				if (a.setAttributeNS == null || (root.ownerDocument != document && document.documentMode == null))
-				{
-					a.setAttribute('xlink:href', Graph.foreignObjectWarningLink);
-					a.setAttribute('target', '_blank');
-				}
-				else
-				{
-					a.setAttributeNS(mxConstants.NS_XLINK, 'xlink:href', Graph.foreignObjectWarningLink);
-					a.setAttributeNS(mxConstants.NS_XLINK, 'target', '_blank');
-				}
+				var warningGroup = canvas.createElement('g');
+				warningGroup.setAttribute('transform', 'translate(0,-5)');
 				
 				var text = canvas.createElement('text');
 				text.setAttribute('text-anchor', 'middle');
@@ -40851,8 +40837,8 @@ if (typeof mxVertexHandler !== 'undefined')
 				mxUtils.write(text, Graph.foreignObjectWarningText);
 				
 				sw.appendChild(g1);
-				a.appendChild(text);
-				sw.appendChild(a);
+				warningGroup.appendChild(text);
+				sw.appendChild(warningGroup);
 				root.appendChild(sw);
 			}
 		};

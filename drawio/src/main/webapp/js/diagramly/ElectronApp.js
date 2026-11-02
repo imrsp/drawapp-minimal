@@ -7,8 +7,197 @@ window.TEMPLATE_PATH = 'templates';
 window.DRAW_MATH_URL = 'math4/es5';
 window.DRAWIO_BASE_URL = '.'; //Prevent access to online website since it is not allowed
 window.DRAWIO_SERVER_URL = '.';
-// Keep the native window title aligned with this desktop application.
-Editor.prototype.appName = 'drawapp-minimal';
+// Branding is injected by the Electron shell and shared across desktop UI.
+var appBranding = window.appBranding || {};
+Editor.prototype.appName = appBranding.appName || 'DrawApp';
+Editor.logoImage = appBranding.logoUrl || IMAGE_PATH + '/electron-logo.svg';
+var originalActionsInit = Actions.prototype.init;
+Actions.prototype.init = function()
+{
+	originalActionsInit.apply(this, arguments);
+	var ui = this.editorUi;
+	if (window.appDisplayVersion && ui)
+	{
+		window.setTimeout(function()
+		{
+			var aboutAction = ui.actions && ui.actions.get('about');
+			if (aboutAction)
+			{
+				aboutAction.getTitle = function() { return 'v' + window.appDisplayVersion; };
+				var originalAbout = aboutAction.funct;
+				aboutAction.funct = function(arg, evt)
+				{
+					if (mxEvent.isShiftDown(evt) && originalAbout != null)
+					{
+						originalAbout.apply(this, arguments);
+						return;
+					}
+					ui.showDialog(new AboutDialog(ui).container, 320, 280, true, true);
+				};
+			}
+		}, 0);
+	}
+};
+
+// The packaged editor bundle is precompiled. Apply branding through the
+// desktop extension hooks so the same config works in source and packaged UI.
+if (appBranding.logoUrl && App.prototype.updateHeader)
+{
+	var originalUpdateHeader = App.prototype.updateHeader;
+	App.prototype.updateHeader = function()
+	{
+		originalUpdateHeader.apply(this, arguments);
+		if (EditorUi.isElectronApp && this.appIcon && this.menubarContainer &&
+			this.appIcon.parentNode !== this.menubarContainer)
+		{
+			this.menubarContainer.insertBefore(this.appIcon, this.menubarContainer.firstChild);
+			this.appIcon.style.backgroundImage = 'url("' + Editor.logoImage + '")';
+			this.appIcon.style.backgroundSize = 'contain';
+			this.appIcon.style.backgroundPosition = 'center';
+			this.appIcon.style.backgroundRepeat = 'no-repeat';
+			this.appIcon.style.backgroundColor = 'transparent';
+			this.appIcon.style.opacity = '1';
+		}
+	};
+}
+
+if (typeof AboutDialog === 'function')
+{
+	var originalAboutDialog = AboutDialog;
+	AboutDialog = function(editorUi)
+	{
+		originalAboutDialog.apply(this, arguments);
+		if (this.container)
+		{
+			var heading = this.container.querySelector('h3');
+			var logo = this.container.querySelector('img');
+			if (heading && appBranding.appName) heading.textContent = mxResources.get('about') + ' ' + appBranding.appName;
+			if (logo && appBranding.logoUrl)
+			{
+				logo.src = appBranding.logoUrl;
+					logo.onerror = function() { logo.onerror = null; logo.src = IMAGE_PATH + '/electron-logo.png'; };
+			}
+			var link = this.container.querySelector('a');
+			if (link && appBranding.repositoryUrl)
+			{
+				link.href = appBranding.repositoryUrl;
+				if (appBranding.repositoryLabel) link.textContent = appBranding.repositoryLabel;
+			}
+			if (window.appDisplayVersion)
+			{
+				var walker = document.createTreeWalker(this.container, NodeFilter.SHOW_TEXT);
+				var node;
+				while ((node = walker.nextNode()))
+				{
+					if (node.nodeValue.indexOf('Powered by mxGraph') >= 0)
+					{
+						node.nodeValue = 'Version ' + window.appDisplayVersion;
+						break;
+					}
+				}
+			}
+		}
+	};
+	AboutDialog.prototype = originalAboutDialog.prototype;
+}
+
+if (EditorUi.prototype.updateTabContainer &&
+	(appBranding.repositoryUrl || appBranding.repositoryLabel))
+{
+	var originalUpdateTabContainer = EditorUi.prototype.updateTabContainer;
+	EditorUi.prototype.updateTabContainer = function()
+	{
+		var result = originalUpdateTabContainer.apply(this, arguments);
+		var link = this.tabContainer && this.tabContainer.querySelector('a[href*="github.com"]');
+		if (link)
+		{
+			link.href = appBranding.repositoryUrl || link.href;
+			var image = link.querySelector('img');
+			if (image && appBranding.repositoryLabel) image.title = appBranding.repositoryLabel;
+		}
+		return result;
+	};
+}
+
+['getHtml', 'getHtml2'].forEach(function(methodName)
+{
+	var original = EditorUi.prototype[methodName];
+	if (original && appBranding.logoUrl)
+	{
+		EditorUi.prototype[methodName] = function()
+		{
+			var html = original.apply(this, arguments);
+			return html.replace(/(?:https?:\/\/[^"'\s]*)?(?:\/images)?\/(?:drawlogo(?:\d+)?(?:-gray|-text-bottom)?|logo(?:-flat(?:-small)?|-small)?)\.(?:png|svg|gif)/gi,
+				appBranding.logoUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;'));
+		};
+	}
+});
+
+if (appBranding.logoUrl)
+{
+	var replaceAppLogo = function(node)
+	{
+		if (node == null || node.nodeType !== 1) return;
+		var images = node.matches && node.matches('img, image') ? [node] : [];
+		if (node.querySelectorAll) images = images.concat(Array.from(node.querySelectorAll('img, image')));
+		images.forEach(function(image)
+		{
+			var sourceAttribute = image.hasAttribute('src') ? 'src' :
+				image.hasAttribute('href') ? 'href' : 'xlink:href';
+			var source = image.getAttribute(sourceAttribute) || '';
+			if (/(?:^|\/)(?:logo(?:-flat(?:-small)?|-small)?|drawlogo(?:\d+)?(?:-gray|-text-bottom)?)\.(?:png|svg|gif)(?:[?#].*)?$/i.test(source) &&
+				image.getAttribute('data-branding-logo') !== '1')
+			{
+				image.setAttribute('data-branding-original-src', source);
+				image.setAttribute('data-branding-logo', '1');
+				image.setAttribute('alt', appBranding.appName || 'DrawApp');
+				image.setAttribute('title', appBranding.appName || 'DrawApp');
+				image.setAttribute(sourceAttribute, appBranding.logoUrl);
+				image.onerror = function()
+				{
+					image.onerror = null;
+					image.setAttribute(sourceAttribute, IMAGE_PATH + '/electron-logo.svg');
+				};
+			}
+		});
+		var links = node.matches && node.matches('a') ? [node] : [];
+		if (node.querySelectorAll) links = links.concat(Array.from(node.querySelectorAll('a')));
+		links.forEach(function(link)
+		{
+			if (link.href.indexOf('github.com/imrsp/drawapp-minimal') >= 0)
+			{
+				var repositoryUrl = appBranding.repositoryUrl || link.href;
+				if (link.href !== repositoryUrl) link.href = repositoryUrl;
+				if (appBranding.repositoryLabel) link.title = appBranding.repositoryLabel;
+			}
+		});
+	};
+	replaceAppLogo(document.documentElement);
+	new MutationObserver(function(records)
+	{
+		records.forEach(function(record)
+		{
+			if (record.type === 'childList') record.addedNodes.forEach(replaceAppLogo);
+			else replaceAppLogo(record.target);
+		});
+	}).observe(document.documentElement, {childList: true, subtree: true, attributes: true,
+		attributeFilter: ['src', 'href', 'xlink:href']});
+}
+EditorUi.prototype.init = (function(origInit)
+{
+	return function()
+	{
+		origInit.apply(this, arguments);
+		if (window.appDisplayVersion)
+		{
+			var aboutAction = this.actions.get('about');
+			if (aboutAction)
+			{
+				aboutAction.getTitle = function() { return 'v' + window.appDisplayVersion; };
+			}
+		}
+	};
+})(EditorUi.prototype.init);
 EditorUi.draftSaveDelay = 5000;
 //Disables eval for JS (uses shapes-14-6-5.min.js)
 mxStencilRegistry.allowEval = false;
@@ -897,7 +1086,6 @@ mxStencilRegistry.allowEval = false;
 			this.loadArgs(argsObj)
 		})
 
-		//We do some async stuff during app loading so we need to know exactly when loading is finished (it is not when onload is finished)
 		electron.sendMessage('app-load-finished', null);
 
 		//Change offline translation

@@ -7,7 +7,6 @@ window.uiTheme = '';
 
 /**
  * No CSS and resources available in embed mode. Parameters and docs:
- * https://www.drawio.com/doc/faq/embed-html-options
  */
 GraphViewer = function(container, xmlNode, graphConfig)
 {
