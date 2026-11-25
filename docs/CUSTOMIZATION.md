@@ -11,7 +11,7 @@ Keep every new project-specific customization setting and source file under `con
 - `appName`: product name in the window, editor, About views, and installers.
 - `description`: app description; `null` or an omitted value derives it from `appName`.
 - `uiVersion`: optional version shown in the app UI. The actual product version still comes from `package.json`.
-- `logoUrl`: path relative to `config/` to the original PNG or SVG, for example `branding/logo.png`. This same source is shown in the editor and used to generate platform icons. Bundled logos are required for packaged icons; remote URLs can only be used for runtime UI.
+- `logoUrl`: path relative to `config/` to the original PNG or SVG, for example `branding/logo.png`. This same source is used by the startup splash, editor header, About dialog, and generated platform icons. Bundled logos are required for packaged icons; remote URLs can only be used for runtime UI.
 - `repositoryUrl` and `repositoryLabel`: About view link destination and label.
 - `copyright`: About view and package copyright; `null` derives it from the app name and current year.
 
