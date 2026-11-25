@@ -108,30 +108,41 @@ if (typeof AboutDialog === 'function')
 			var aboutHtml = appBranding.aboutHtml;
 			if (aboutHtml != null && typeof aboutHtml == 'object' && !Array.isArray(aboutHtml))
 			{
-				var language = (typeof mxLanguage == 'string' ? mxLanguage : '').replace(/_/g, '-');
-				var languageKeys = [language, language.split('-')[0], 'main'];
+				var currentLanguage = typeof mxClient.language == 'string' ? mxClient.language :
+					(typeof mxLanguage == 'string' ? mxLanguage : '');
+				var language = currentLanguage.replace(/_/g, '-').toLowerCase();
+				var languageKeys = [language];
+				var languageParts = language.split('-');
+				while (languageParts.length > 1)
+				{
+					languageParts.pop();
+					languageKeys.push(languageParts.join('-'));
+				}
+
+				// draw.io calls Simplified Chinese "zh". Accept the common
+				// configuration spelling "zh-CN" for that locale, while keeping
+				// Traditional Chinese ("zh-TW") separate.
+				if (language == 'zh')
+				{
+					languageKeys.push('zh-cn', 'zh-hans', 'zh-sg');
+				}
+
+				languageKeys.push('main');
 				aboutHtml = null;
 				for (var i = 0; i < languageKeys.length && aboutHtml == null; i++)
 				{
-					var languageKey = languageKeys[i];
-					if (languageKey && typeof appBranding.aboutHtml[languageKey] == 'string')
+					var normalizedKey = languageKeys[i];
+					Object.keys(appBranding.aboutHtml).some(function(key)
 					{
-						aboutHtml = appBranding.aboutHtml[languageKey];
-					}
-					else if (languageKey)
-					{
-						Object.keys(appBranding.aboutHtml).some(function(key)
+						if (key.replace(/_/g, '-').toLowerCase() == normalizedKey &&
+							typeof appBranding.aboutHtml[key] == 'string')
 						{
-							if (key.toLowerCase() == languageKey.toLowerCase() &&
-								typeof appBranding.aboutHtml[key] == 'string')
-							{
-								aboutHtml = appBranding.aboutHtml[key];
-								return true;
-							}
+							aboutHtml = appBranding.aboutHtml[key];
+							return true;
+						}
 
-							return false;
-						});
-					}
+						return false;
+					});
 				}
 			}
 			var closeButton = this.container.querySelector('button');

@@ -30,7 +30,7 @@ The About dialog's content can be customized. The heading and Close controls sta
 | Custom content | `aboutHtml` | Optional supported HTML inserted below the link and above the copyright. |
 | Copyright | `copyright` | Uses this text; `null` generates a default from the current year and app name. |
 
-The “About” and “Close” labels use the editor's current language. A string in `aboutHtml` is used for every language. For localized content, keys should match the editor language (for example `zh-CN`); the base language (such as `zh`) is tried next, followed by `main`. For example:
+The “About” and “Close” labels use the editor's current language. A string in `aboutHtml` is used for every language. For localized content, matching uses the current editor language, then progressively broader language tags, and finally `main`. Matching ignores case and treats `_` and `-` as equivalent. draw.io uses `zh` for Simplified Chinese; when no `zh` entry exists, `zh-CN` (or `zh-Hans`/`zh-SG`) is accepted as a Simplified Chinese fallback. `zh-TW` remains separate for Traditional Chinese. For example:
 
 ```json
 "aboutHtml": {
