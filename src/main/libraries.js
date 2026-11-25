@@ -3,8 +3,10 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 export const DEFAULT_BUILT_IN_LIBRARIES = Object.freeze([
-	'general', 'uml', 'er', 'bpmn', 'flowchart', 'basic', 'arrows2'
+	'general', 'misc', 'advanced', 'uml', 'er', 'bpmn', 'flowchart', 'basic', 'arrows2'
 ]);
+
+export const DEFAULT_MORE_SHAPES_ORDER = Object.freeze(['custom', 'builtIn']);
 
 const LIBRARY_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
 
@@ -40,6 +42,13 @@ export function normalizeLibrarySettings(value = {})
 	{
 		throw new Error(`Default libraries must also be included in the package: ${unavailableDefaults.join(', ')}`);
 	}
+	const moreShapesOrder = value.moreShapesOrder ?? DEFAULT_MORE_SHAPES_ORDER;
+	if (!Array.isArray(moreShapesOrder) || moreShapesOrder.length !== 2 ||
+		new Set(moreShapesOrder).size !== 2 ||
+		moreShapesOrder.some(section => section !== 'builtIn' && section !== 'custom'))
+	{
+		throw new Error('libraries.moreShapesOrder must contain "builtIn" and "custom" exactly once');
+	}
 
 	const custom = value.custom ?? [];
 	if (!Array.isArray(custom) || custom.some(file => typeof file !== 'string'))
@@ -60,7 +69,8 @@ export function normalizeLibrarySettings(value = {})
 
 	return Object.freeze({
 		builtIn: Object.freeze({included: Object.freeze(included), default: Object.freeze(defaults)}),
-		custom: Object.freeze(customFiles)
+		custom: Object.freeze(customFiles),
+		moreShapesOrder: Object.freeze([...moreShapesOrder])
 	});
 }
 
@@ -161,7 +171,8 @@ export function createEditorLibraryConfig(libraries, appBaseDir)
 		enabledLibraries: [...libraries.builtIn.included],
 		defaultLibraries: libraries.builtIn.default.join(';'),
 		defaultCustomLibraries: customLibraries.map(library => library.id),
-		managedCustomLibraries: customLibraries
+		managedCustomLibraries: customLibraries,
+		moreShapesOrder: [...libraries.moreShapesOrder]
 	};
 }
 
@@ -196,8 +207,6 @@ export function getBuiltInLibraryResources(rootDir, libraryIds)
 	for (const id of libraryIds)
 	{
 		const names = new Set([id, aliases[id]]);
-		if (id === 'general') ['general', 'misc', 'advanced'].forEach(name => names.add(name));
-
 		for (const [name, paths] of registry)
 		{
 			if ([...names].some(prefix => prefix &&

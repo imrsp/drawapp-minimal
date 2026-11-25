@@ -632,6 +632,95 @@ mxStencilRegistry.allowEval = false;
 			}) : [];
 		var managedCustomLibraryIds = managedCustomLibraries.map(function(library) { return library.id; });
 		var includedLibraries = window.appLibraryConfig.enabledLibraries.concat(managedCustomLibraryIds);
+		var moreShapesOrder = Array.isArray(window.appLibraryConfig.moreShapesOrder) ?
+			window.appLibraryConfig.moreShapesOrder : ['custom', 'builtIn'];
+
+		// The upstream "general" More Shapes entry controls three palettes as
+		// one unit. Split it so included/default IDs can address them separately.
+		Sidebar.prototype.configuration = Sidebar.prototype.configuration.reduce(function(result, entry)
+		{
+			if (entry.id == 'general' && entry.libs != null &&
+				entry.libs.indexOf('misc') >= 0 && entry.libs.indexOf('advanced') >= 0)
+			{
+				result.push({id: 'general', libs: ['general']});
+				result.push({id: 'misc', libs: ['misc']});
+				result.push({id: 'advanced', libs: ['advanced']});
+			}
+			else
+			{
+				result.push(entry);
+			}
+
+			return result;
+		}, []);
+		var originalAddEntry = Sidebar.prototype.addEntry;
+		Sidebar.prototype.addEntry = function(tags, fn)
+		{
+			var current = this.currentSearchEntryLibrary;
+			if (current != null && current.id == 'general' && current.lib == 'misc')
+			{
+				current.id = 'misc';
+				try
+				{
+					return originalAddEntry.apply(this, arguments);
+				}
+				finally
+				{
+					current.id = 'general';
+				}
+			}
+
+			return originalAddEntry.apply(this, arguments);
+		};
+
+		var originalUpdateEntries = Sidebar.prototype.updateEntries;
+		Sidebar.prototype.updateEntries = function()
+		{
+			originalUpdateEntries.apply(this, arguments);
+
+			var standard = null;
+			for (var i = 0; i < this.entries.length; i++)
+			{
+				if (this.entries[i].title == mxResources.get('standard'))
+				{
+					standard = this.entries[i];
+					break;
+				}
+			}
+
+			if (standard == null) return;
+
+			var generalIndex = -1;
+			for (var i = 0; i < standard.entries.length; i++)
+			{
+				if (standard.entries[i].id == 'general')
+				{
+					generalIndex = i;
+					break;
+				}
+			}
+
+			if (generalIndex < 0) return;
+
+			var additions = [];
+			[['misc', 'misc'], ['advanced', 'advanced']].forEach(function(item)
+			{
+				if (includedLibraries.indexOf(item[0]) >= 0 && !standard.entries.some(function(entry)
+				{
+					return entry.id == item[0];
+				}))
+				{
+					additions.push({title: mxResources.get(item[1]), id: item[0],
+						image: IMAGE_PATH + '/sidebar-general.png'});
+				}
+			});
+
+			if (additions.length > 0)
+			{
+				standard.entries.splice.apply(standard.entries,
+					[generalIndex + 1, 0].concat(additions));
+			}
+		};
 
 		function getManagedCustomLibraryVisibility()
 		{
@@ -709,17 +798,48 @@ mxStencilRegistry.allowEval = false;
 				{
 					return {id: library.id, title: library.title || library.id};
 				});
-				sidebar.customEntries = (originalCustomEntries || []).concat([
+				var customSections = (originalCustomEntries || []).concat([
 					{title: 'Custom Libraries', entries: libraryEntries}
 				]);
+				var customFirst = moreShapesOrder.indexOf('custom') < moreShapesOrder.indexOf('builtIn');
+				var originalEnabledLibraries = Sidebar.prototype.enabledLibraries;
+				var args = Array.prototype.slice.call(arguments);
+
+				if (customFirst)
+				{
+					sidebar.customEntries = customSections;
+				}
+				else
+				{
+					// The native dialog puts customEntries first and filters entries
+					// against enabledLibraries. Move the custom sections into its
+					// normal list and temporarily allow their IDs so they render last.
+					sidebar.customEntries = null;
+					var builtInEntries = (args[2] != null) ? args[2] : sidebar.entries;
+					var trailingSections = customSections.map(function(section)
+					{
+						return {title: editorUi.getResource(section.title), entries: section.entries.map(function(entry)
+						{
+							return {id: entry.id, title: editorUi.getResource(entry.title),
+								desc: editorUi.getResource(entry.desc), image: entry.preview};
+						})};
+					});
+					args[2] = builtInEntries.concat(trailingSections);
+					Sidebar.prototype.enabledLibraries = (originalEnabledLibraries || []).concat(
+						customSections.reduce(function(ids, section)
+						{
+							return ids.concat(section.entries.map(function(entry) { return entry.id; }));
+						}, []));
+				}
 
 				try
 				{
-					originalMoreShapesDialog.apply(this, arguments);
+					originalMoreShapesDialog.apply(this, args);
 				}
 				finally
 				{
 					sidebar.customEntries = originalCustomEntries;
+					Sidebar.prototype.enabledLibraries = originalEnabledLibraries;
 				}
 			};
 		}

@@ -14,10 +14,11 @@
 	"copyright": null,
 	"libraries": {
 		"builtIn": {
-			"included": ["general", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"],
-			"default": ["general", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"]
+			"included": ["general", "misc", "advanced", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"],
+			"default": ["general", "misc", "advanced", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"]
 		},
-		"custom": []
+		"custom": [],
+		"moreShapesOrder": ["builtIn", "custom"]
 	},
 	"packaging": {
 		"appId": "org.drawapp.minimal",

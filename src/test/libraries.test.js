@@ -19,7 +19,7 @@ test('library settings default to the editor current built-in libraries', () =>
 {
 	const {libraries} = loadAppConfig(path.join(projectDir, 'config'));
 	assert.deepEqual(libraries.builtIn.included,
-		['general', 'uml', 'er', 'bpmn', 'flowchart', 'basic', 'arrows2']);
+		['general', 'misc', 'advanced', 'uml', 'er', 'bpmn', 'flowchart', 'basic', 'arrows2']);
 	assert.deepEqual(libraries.builtIn.default, libraries.builtIn.included);
 });
 

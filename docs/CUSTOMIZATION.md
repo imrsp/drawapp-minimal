@@ -39,14 +39,17 @@ Use the top-level `libraries` setting in `config/app.json` to manage shape libra
 ```json
 "libraries": {
   "builtIn": {
-    "included": ["general", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"],
-    "default": ["general", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"]
+    "included": ["general", "misc", "advanced", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"],
+    "default": ["general", "misc", "advanced", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"]
   },
-  "custom": ["company.xml"]
+  "custom": ["company.xml"],
+  "moreShapesOrder": ["builtIn", "custom"]
 }
 ```
 
-`builtIn.included` selects which built-in library resources ship in the app and remain available from More Shapes. `builtIn.default` selects which included libraries are shown by default. A default library must also be included. Library IDs are the sidebar IDs used by the embedded draw.io editor. These lists apply to all desktop build targets.
+`builtIn.included` selects which built-in library resources ship in the app and remain available from More Shapes. `builtIn.default` selects which included libraries are shown by default. A default library must also be included. Library IDs are the sidebar IDs used by the embedded draw.io editor. These lists apply to all desktop build targets. The General, Misc, and Advanced palettes are independent IDs; include and default each one separately. For example, setting both arrays to `["general"]` packages and shows only General, while Misc and Advanced remain unavailable.
+
+`moreShapesOrder` controls whether the built-in More Shapes categories or the packaged Custom Libraries category appears first. It must contain `"builtIn"` and `"custom"` exactly once. If omitted, the existing custom-first order is kept. Set it to `["builtIn", "custom"]` to show Standard and the other built-in categories before Custom Libraries. This changes category placement only; each library's More Shapes checkbox and saved visibility preference are independent.
 
 Custom libraries use draw.io's native `.xml` format: the document has an `<mxlibrary>` root containing a JSON array of entries. Create one in the editor with **File > New Library**, add shapes, groups, or images, and save/export it. You can also import an existing `.xml` library with **File > Open Library**. Copy the file into `config/mxlib/`, then add its path relative to that directory to `libraries.custom`. For example, `"custom": ["company.xml"]` refers to `config/mxlib/company.xml`; subdirectories are supported. Registered libraries are loaded automatically when the desktop app starts and are included in every build target. Builds check that each listed file exists and is a valid `mxlibrary` document.
 
