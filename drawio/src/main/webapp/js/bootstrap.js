@@ -42,11 +42,22 @@ var urlParams = (function()
 // Read it here, after URL parameters are available and before app.min.js loads.
 if (typeof window !== 'undefined')
 {
+	var appLogoScale = {};
+	try
+	{
+		appLogoScale = urlParams['logoScale'] ? JSON.parse(decodeURIComponent(urlParams['logoScale'])) : {};
+	}
+	catch (e)
+	{
+		console.error('Failed to read application logo scale configuration:', e);
+	}
 	window.appBranding = {
 		appName: decodeURIComponent(urlParams['appName'] || ''),
 		description: decodeURIComponent(urlParams['description'] || ''),
 		uiVersion: decodeURIComponent(urlParams['displayVersion'] || ''),
 		logoUrl: decodeURIComponent(urlParams['logoUrl'] || ''),
+		logoScale: appLogoScale,
+		aboutHtml: decodeURIComponent(urlParams['aboutHtml'] || ''),
 		repositoryUrl: decodeURIComponent(urlParams['repositoryUrl'] || ''),
 		repositoryLabel: decodeURIComponent(urlParams['repositoryLabel'] || ''),
 		copyright: decodeURIComponent(urlParams['copyright'] || '')

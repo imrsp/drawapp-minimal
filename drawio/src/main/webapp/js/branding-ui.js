@@ -39,6 +39,12 @@
 
 		if (splashLogo && fallback)
 		{
+			var splashScale = branding.logoScale && branding.logoScale.splash || 1;
+			[splashLogo, fallback].forEach(function(image)
+			{
+				image.style.width = (72 * splashScale) + 'px';
+				image.style.height = (72 * splashScale) + 'px';
+			});
 			splashLogo.onload = function()
 			{
 				splashLogo.hidden = false;

@@ -3,6 +3,12 @@
 	"description": "DrawApp desktop diagram editor",
 	"uiVersion": null,
 	"logoUrl": "branding/logo.png",
+	"logoScale": {
+		"header": 1,
+		"about": 1,
+		"splash": 1
+	},
+	"aboutHtml": "",
 	"repositoryUrl": "https://github.com/imrsp/drawapp-minimal",
 	"repositoryLabel": "imrsp/drawapp-minimal",
 	"copyright": null,

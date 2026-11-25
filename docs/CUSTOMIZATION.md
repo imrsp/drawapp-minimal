@@ -12,8 +12,25 @@ Keep every new project-specific customization setting and source file under `con
 - `description`: app description; `null` or an omitted value derives it from `appName`.
 - `uiVersion`: optional version shown in the app UI. The actual product version still comes from `package.json`.
 - `logoUrl`: path relative to `config/` to the original PNG or SVG, for example `branding/logo.png`. This same source is used by the startup splash, editor header, About dialog, and generated platform icons. Bundled logos are required for packaged icons; remote URLs can only be used for runtime UI.
-- `repositoryUrl` and `repositoryLabel`: About view link destination and label.
+- `logoScale`: independent size multipliers for `header`, `about`, and `splash` logos. `1` keeps the current size, `1.25` makes that logo 25% larger, and `0.8` makes it 20% smaller. Each value is limited to `0.25`–`2`; invalid or omitted values use `1`. For example, set `header` to `1.5` to enlarge the top-left editor logo without changing the other locations.
+- `repositoryUrl` and `repositoryLabel`: About view link destination and label. Clicking the editor's top-left app logo opens the same `repositoryUrl`.
+- `aboutHtml`: optional HTML content inserted in the About dialog between the repository link and copyright. Leave it as `""` to omit the section. It supports common text, heading, list, link, and image markup; scripts and active content are removed, and the value is limited to 20,000 characters.
 - `copyright`: About view and package copyright; `null` derives it from the app name and current year.
+
+## About dialog customization
+
+The About dialog's content can be customized, but its overall layout is fixed. Its elements appear in this order:
+
+| About dialog element | Setting | Behavior |
+| --- | --- | --- |
+| Heading | `appName` | Uses the localized “About” label followed by the app name. |
+| Logo | `logoUrl`, `logoScale.about` | Uses the shared logo image and the About-specific size multiplier. |
+| Version | `uiVersion` | Uses this value when set; otherwise uses the product version from `package.json`. |
+| Link | `repositoryUrl`, `repositoryLabel` | Sets the destination and visible link text. |
+| Custom content | `aboutHtml` | Optional supported HTML inserted below the link and above the copyright. |
+| Copyright | `copyright` | Uses this text; `null` generates a default from the current year and app name. |
+
+The localized “About” and “Close” labels and the order of elements are fixed. The custom HTML is intended for presentation content: scripts, event-handler attributes, embedded frames, and unsafe URL schemes are removed. `description` is used for app metadata and the startup screen, but is not shown in the About dialog.
 
 ## Shape libraries
 

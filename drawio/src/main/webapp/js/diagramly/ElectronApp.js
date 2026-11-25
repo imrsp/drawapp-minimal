@@ -11,6 +11,17 @@ window.DRAWIO_SERVER_URL = '.';
 var appBranding = window.appBranding || {};
 Editor.prototype.appName = appBranding.appName || 'DrawApp';
 Editor.logoImage = appBranding.logoUrl || IMAGE_PATH + '/electron-logo.svg';
+
+// Keep the desktop app logo action aligned with the destination shown in About.
+if (appBranding.repositoryUrl && App.prototype.appIconClicked)
+{
+	App.prototype.appIconClicked = function(evt)
+	{
+		this.openLink(appBranding.repositoryUrl);
+		mxEvent.consume(evt);
+	};
+}
+
 var originalActionsInit = Actions.prototype.init;
 Actions.prototype.init = function()
 {
@@ -47,10 +58,18 @@ if (appBranding.logoUrl && App.prototype.updateHeader)
 	App.prototype.updateHeader = function()
 	{
 		originalUpdateHeader.apply(this, arguments);
-		if (EditorUi.isElectronApp && this.appIcon && this.menubarContainer &&
-			this.appIcon.parentNode !== this.menubarContainer)
+		if (EditorUi.isElectronApp && this.appIcon && this.menubarContainer)
 		{
-			this.menubarContainer.insertBefore(this.appIcon, this.menubarContainer.firstChild);
+			if (this.appIcon.parentNode !== this.menubarContainer)
+			{
+				this.menubarContainer.insertBefore(this.appIcon, this.menubarContainer.firstChild);
+			}
+			var headerScale = appBranding.logoScale && appBranding.logoScale.header || 1;
+			var headerWidth = 32 * headerScale;
+			var headerHeight = 36 * headerScale;
+			this.appIcon.style.width = headerWidth + 'px';
+			this.appIcon.style.height = headerHeight + 'px';
+			this.appIcon.style.top = (10 + (36 - headerHeight) / 2) + 'px';
 			this.appIcon.style.backgroundImage = 'url("' + Editor.logoImage + '")';
 			this.appIcon.style.backgroundSize = 'contain';
 			this.appIcon.style.backgroundPosition = 'center';
@@ -75,13 +94,56 @@ if (typeof AboutDialog === 'function')
 			if (logo && appBranding.logoUrl)
 			{
 				logo.src = appBranding.logoUrl;
-					logo.onerror = function() { logo.onerror = null; logo.src = IMAGE_PATH + '/electron-logo.svg'; };
+				var aboutScale = appBranding.logoScale && appBranding.logoScale.about || 1;
+				logo.style.width = (151 * aboutScale) + 'px';
+				logo.style.height = 'auto';
+				logo.onerror = function() { logo.onerror = null; logo.src = IMAGE_PATH + '/electron-logo.svg'; };
 			}
 			var link = this.container.querySelector('a');
 			if (link && appBranding.repositoryUrl)
 			{
 				link.href = appBranding.repositoryUrl;
 				if (appBranding.repositoryLabel) link.textContent = appBranding.repositoryLabel;
+			}
+			var closeButton = this.container.querySelector('button');
+			if (closeButton) closeButton.style.marginTop = '24px';
+			if (appBranding.aboutHtml)
+			{
+				var customContent = document.createElement('div');
+				customContent.setAttribute('data-branding-about-html', '1');
+				customContent.className = 'geBrandingAboutHtml';
+				var template = document.createElement('template');
+				template.innerHTML = appBranding.aboutHtml;
+				var allowedTags = 'A,P,DIV,SPAN,BR,STRONG,B,EM,I,U,SMALL,UL,OL,LI,IMG,H1,H2,H3,H4,H5,H6,BLOCKQUOTE,HR,CODE,PRE'.split(',');
+				Array.from(template.content.querySelectorAll('*')).forEach(function(element)
+				{
+					if (allowedTags.indexOf(element.tagName) < 0)
+					{
+						element.remove();
+						return;
+					}
+					Array.from(element.attributes).forEach(function(attribute)
+					{
+						var name = attribute.name.toLowerCase();
+						var allowed = ['class', 'title', 'style', 'alt', 'width', 'height', 'href', 'src', 'target', 'rel'].indexOf(name) >= 0;
+						if (!allowed || name.indexOf('on') === 0 || name === 'style' && /url\s*\(|expression|@import|javascript:/i.test(attribute.value))
+						{
+							element.removeAttribute(attribute.name);
+						}
+						else if ((name === 'href' || name === 'src') && /^[a-z][a-z0-9+.-]*:/i.test(attribute.value) &&
+							!(/^(https?:|mailto:|tel:)/i.test(attribute.value) && name === 'href' || /^https?:/i.test(attribute.value) && name === 'src'))
+						{
+							element.removeAttribute(attribute.name);
+						}
+					});
+					if (element.tagName === 'A' && element.getAttribute('target') === '_blank')
+					{
+						element.setAttribute('rel', 'noopener noreferrer');
+					}
+				});
+				customContent.appendChild(template.content);
+				customContent.style.margin = '12px 0';
+				this.container.insertBefore(customContent, this.container.querySelector('[data-branding-copyright="1"]') || closeButton || null);
 			}
 			if (appBranding.copyright)
 			{

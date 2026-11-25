@@ -7,6 +7,8 @@ const DEFAULT_BRANDING = Object.freeze({
 	description: null,
 	uiVersion: null,
 	logoUrl: 'branding/logo.png',
+	logoScale: Object.freeze({header: 1, about: 1, splash: 1}),
+	aboutHtml: '',
 	repositoryUrl: 'https://github.com/imrsp/drawapp-minimal',
 	repositoryLabel: 'imrsp/drawapp-minimal',
 	copyright: null
@@ -38,6 +40,12 @@ function cleanPackageName(value)
 		packageName : DEFAULT_PACKAGING.packageName;
 }
 
+function cleanLogoScale(value)
+{
+	const scale = Number(value);
+	return Number.isFinite(scale) && scale >= 0.25 && scale <= 2 ? scale : 1;
+}
+
 function normalizeBranding(value = {})
 {
 	const appName = cleanString(value.appName, DEFAULT_BRANDING.appName);
@@ -47,11 +55,20 @@ function normalizeBranding(value = {})
 	const uiVersion = typeof value.uiVersion === 'string' && value.uiVersion.trim() ?
 		value.uiVersion.trim().slice(0, 80) : null;
 	const repositoryUrl = cleanString(value.repositoryUrl, DEFAULT_BRANDING.repositoryUrl, 2048);
+	const requestedLogoScale = value.logoScale != null && typeof value.logoScale === 'object' && !Array.isArray(value.logoScale) ?
+		value.logoScale : {};
+	const logoScale = Object.freeze({
+		header: cleanLogoScale(requestedLogoScale.header),
+		about: cleanLogoScale(requestedLogoScale.about),
+		splash: cleanLogoScale(requestedLogoScale.splash)
+	});
 	return Object.freeze({
 		appName,
 		description: cleanString(value.description, `${appName} desktop diagram editor`),
 		uiVersion,
 		logoUrl,
+		logoScale,
+		aboutHtml: typeof value.aboutHtml === 'string' ? value.aboutHtml.slice(0, 20000) : DEFAULT_BRANDING.aboutHtml,
 		repositoryUrl: /^https?:\/\//i.test(repositoryUrl) ? repositoryUrl : DEFAULT_BRANDING.repositoryUrl,
 		repositoryLabel: cleanString(value.repositoryLabel, DEFAULT_BRANDING.repositoryLabel),
 		copyright: cleanString(value.copyright, `Copyright ${new Date().getFullYear()} ${appName} contributors`)
