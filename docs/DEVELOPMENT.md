@@ -17,10 +17,10 @@ Set `DRAWIO_ENV=dev` to open DevTools when launching from source. Run `npm test`
 
 - `src/main/`: Electron main process, preload bridge, CLI argument handling, window state, and file operations.
 - `drawio/src/main/webapp/`: embedded diagram editor, UI, assets, and translations.
-- `config/app.json`: application branding and packaging metadata.
+- `config/`: application settings, original branding assets, and project-owned library/template sources. Follow [Customization](CUSTOMIZATION.md) for placement rules.
 - `scripts/`: build orchestration and icon generation.
 - `build/`: Electron packaging hooks, entitlements, and platform resources.
-- `.build/`: ignored generated icons and temporary electron-builder configuration.
+- `.build/`: ignored generated icons and temporary electron-builder configuration. Keep only generated build output here.
 - `electron-builder-*.json`: platform-specific packaging templates.
 - `docs/`: project-owned documentation, indexed in this directory's `README.md`.
 

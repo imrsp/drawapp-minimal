@@ -14,7 +14,8 @@ import {PDFDocument, PDFHexString, PDFName} from '@cantoo/pdf-lib';
 import Store from 'electron-store';
 import contextMenu from 'electron-context-menu';
 import {spawn, exec} from 'child_process';
-import {loadBranding} from './branding.js';
+import {loadAppConfig} from './branding.js';
+import {createEditorLibraryConfig} from './libraries.js';
 
 let store;
 
@@ -65,7 +66,8 @@ function detectInitialAdaptiveColorsDefault()
 }
 
 const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const branding = loadBranding(path.resolve(__dirname, '../../config'));
+const configDir = path.resolve(__dirname, '../../config');
+const {branding, libraries} = loadAppConfig(configDir);
 const displayedVersion = branding.uiVersion || app.getVersion();
 
 //Command option to disable hardware acceleration
@@ -117,6 +119,8 @@ let dialogOpen = false;
 let initialAdaptiveColorsDefault = null;
 const codeDir = path.join(__dirname, '/../../drawio/src/main/webapp');
 const codeUrl = url.pathToFileURL(codeDir).href.replace(/\/.\:\//, str => str.toUpperCase()); // Fix for windows drive letter
+const brandingLogoPath = branding.logoUrl.startsWith('branding/') ? path.join(configDir, branding.logoUrl) : null;
+const rendererLogoUrl = brandingLogoPath ? url.pathToFileURL(brandingLogoPath).href : branding.logoUrl;
 // Production app uses asar archive, so we need to go up two more level. It's extra cautious since asar is read-only anyway.
 const appBaseDir = path.join(__dirname, __dirname.endsWith(path.join('resources', 'app.asar', 'src', 'main')) ?
 								'/../../../../' : '/../../');
@@ -585,7 +589,7 @@ function createWindow (opt = {})
 		backgroundColor: '#FFF',
 		width: lastWinSize.width,
 		height: lastWinSize.height,
-		icon: `${codeDir}/images/electron-logo.png`,
+		icon: brandingLogoPath || path.join(codeDir, 'images', 'logo.png'),
 		webPreferences: {
 			preload: `${__dirname}/electron-preload.js`,
 			spellcheck: enableSpellCheck,
@@ -634,11 +638,12 @@ function createWindow (opt = {})
 	//Cannot be read before app is ready
 	queryObj['appLang'] = app.getLocale();
 	queryObj['appVersion'] = app.getVersion();
-	queryObj['branding'] = JSON.stringify(branding);
+	queryObj['branding'] = JSON.stringify({...branding, logoUrl: rendererLogoUrl});
+	queryObj['appLibraries'] = JSON.stringify(createEditorLibraryConfig(libraries, appBaseDir));
 	queryObj['displayVersion'] = displayedVersion;
 	queryObj['appName'] = branding.appName;
 	queryObj['description'] = branding.description;
-	queryObj['logoUrl'] = branding.logoUrl || '';
+	queryObj['logoUrl'] = rendererLogoUrl || '';
 	queryObj['repositoryUrl'] = branding.repositoryUrl;
 	queryObj['repositoryLabel'] = branding.repositoryLabel;
 	queryObj['copyright'] = branding.copyright;

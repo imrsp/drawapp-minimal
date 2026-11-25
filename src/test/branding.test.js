@@ -41,7 +41,7 @@ test('loadBranding falls back cleanly when config files are missing or malformed
 		fs.writeFileSync(path.join(dir, 'app.json'), '{not json');
 		const branding = loadBranding(dir);
 		assert.equal(branding.appName, 'DrawApp');
-		assert.equal(branding.logoUrl, 'images/electron-logo.png');
+		assert.equal(branding.logoUrl, 'branding/logo.png');
 		assert.equal(branding.uiVersion, null);
 		assert.match(branding.copyright, new RegExp(`^Copyright ${new Date().getFullYear()} DrawApp contributors$`));
 	}
@@ -58,9 +58,9 @@ test('loadBranding accepts bundled app logos but rejects unsafe relative paths',
 	try
 	{
 		fs.writeFileSync(path.join(dir, 'app.json'), JSON.stringify({logoUrl: 'images/electron-logo.svg'}));
-		assert.equal(loadBranding(dir).logoUrl, 'images/electron-logo.svg');
+		assert.equal(loadBranding(dir).logoUrl, 'branding/logo.png');
 		fs.writeFileSync(path.join(dir, 'app.json'), JSON.stringify({logoUrl: 'images/../logo.svg'}));
-		assert.equal(loadBranding(dir).logoUrl, 'images/electron-logo.png');
+		assert.equal(loadBranding(dir).logoUrl, 'branding/logo.png');
 	}
 	finally
 	{

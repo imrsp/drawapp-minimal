@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
+import {normalizeLibrarySettings} from './libraries.js';
 
 const DEFAULT_BRANDING = Object.freeze({
 	appName: 'DrawApp',
 	description: null,
 	uiVersion: null,
-	logoUrl: 'images/electron-logo.png',
+	logoUrl: 'branding/logo.png',
 	repositoryUrl: 'https://github.com/imrsp/drawapp-minimal',
 	repositoryLabel: 'imrsp/drawapp-minimal',
 	copyright: null
@@ -33,7 +34,7 @@ function normalizeBranding(value = {})
 {
 	const appName = cleanString(value.appName, DEFAULT_BRANDING.appName);
 	const requestedLogoUrl = typeof value.logoUrl === 'string' ? value.logoUrl.trim() : '';
-	const logoUrl = /^https?:\/\//i.test(requestedLogoUrl) || /^images\/[a-z0-9._-]+\.(?:png|svg)$/i.test(requestedLogoUrl) ?
+	const logoUrl = /^https?:\/\//i.test(requestedLogoUrl) || /^branding\/[a-z0-9._-]+\.(?:png|svg)$/i.test(requestedLogoUrl) ?
 		requestedLogoUrl.slice(0, 2048) : DEFAULT_BRANDING.logoUrl;
 	const uiVersion = typeof value.uiVersion === 'string' && value.uiVersion.trim() ?
 		value.uiVersion.trim().slice(0, 80) : null;
@@ -69,7 +70,8 @@ export function loadAppConfig(configDir)
 		raw.packaging : {};
 	return Object.freeze({
 		branding: normalizeBranding(raw),
-		packaging: Object.freeze({...DEFAULT_PACKAGING, ...packaging})
+		packaging: Object.freeze({...DEFAULT_PACKAGING, ...packaging}),
+		libraries: normalizeLibrarySettings(raw.libraries)
 	});
 }
 

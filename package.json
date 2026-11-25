@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "electron .",
-    "test": "node --test src/test/branding.test.js src/test/cli-args.test.js src/test/msi-project-created.test.js src/test/window-bounds.test.js src/test/window-lifecycle.test.js",
+    "test": "node --test src/test/branding.test.js src/test/cli-args.test.js src/test/libraries.test.js src/test/msi-project-created.test.js src/test/window-bounds.test.js src/test/window-lifecycle.test.js",
     "generate:icons": "node scripts/build.js icons",
     "build:mac": "node scripts/build.js mac",
     "build:win": "node scripts/build.js win",

@@ -75,7 +75,7 @@ if (typeof AboutDialog === 'function')
 			if (logo && appBranding.logoUrl)
 			{
 				logo.src = appBranding.logoUrl;
-					logo.onerror = function() { logo.onerror = null; logo.src = IMAGE_PATH + '/electron-logo.png'; };
+					logo.onerror = function() { logo.onerror = null; logo.src = IMAGE_PATH + '/electron-logo.svg'; };
 			}
 			var link = this.container.querySelector('a');
 			if (link && appBranding.repositoryUrl)
@@ -516,7 +516,20 @@ mxStencilRegistry.allowEval = false;
 	var editorCongigure = Editor.configure;
 	Editor.configure = function(config)
 	{
-		editorCongigure.apply(this, arguments);
+		var appLibraryConfig = window.appLibraryConfig;
+		if (appLibraryConfig != null && typeof appLibraryConfig === 'object')
+		{
+			config = Object.assign({}, config || {}, {
+				enabledLibraries: appLibraryConfig.enabledLibraries,
+				defaultLibraries: appLibraryConfig.defaultLibraries,
+				defaultCustomLibraries: Array.from(new Set([
+					...(Array.isArray(config && config.defaultCustomLibraries) ? config.defaultCustomLibraries : []),
+					...(Array.isArray(appLibraryConfig.defaultCustomLibraries) ? appLibraryConfig.defaultCustomLibraries : [])
+				]))
+			});
+		}
+
+		editorCongigure.call(this, config);
 
 		if (config != null)
 		{
@@ -546,6 +559,25 @@ mxStencilRegistry.allowEval = false;
 			}
 		}
 	};
+
+	if (window.appLibraryConfig != null && Array.isArray(window.appLibraryConfig.enabledLibraries))
+	{
+		var originalShowEntries = Sidebar.prototype.showEntries;
+		var includedLibraries = window.appLibraryConfig.enabledLibraries;
+		Sidebar.prototype.showEntries = function(entries, remember, force)
+		{
+			if (entries != null)
+			{
+				var selected = Array.isArray(entries) ? entries : String(entries).split(';');
+				entries = selected.filter(function(id)
+				{
+					return includedLibraries.indexOf(this.libAliases[id] || id) >= 0;
+				}, this).join(';');
+			}
+
+			return originalShowEntries.call(this, entries, remember, force);
+		};
+	}
 	
 	var menusInit = Menus.prototype.init;
 	Menus.prototype.init = function()

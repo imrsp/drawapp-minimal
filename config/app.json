@@ -2,10 +2,17 @@
 	"appName": "DrawApp",
 	"description": "DrawApp desktop diagram editor",
 	"uiVersion": null,
-	"logoUrl": "images/electron-logo.png",
+	"logoUrl": "branding/logo.png",
 	"repositoryUrl": "https://github.com/imrsp/drawapp-minimal",
 	"repositoryLabel": "imrsp/drawapp-minimal",
 	"copyright": null,
+	"libraries": {
+		"builtIn": {
+			"included": ["general", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"],
+			"default": ["general", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"]
+		},
+		"custom": []
+	},
 	"packaging": {
 		"appId": "org.drawapp.minimal",
 		"executableName": "drawapp-minimal",

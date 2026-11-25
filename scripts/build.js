@@ -3,6 +3,7 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import fs from 'node:fs';
 import {loadAppConfig} from '../src/main/branding.js';
+import {getBuiltInLibraryResources, getLibraryFilePatterns, validateCustomLibraries} from '../src/main/libraries.js';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const configDir = path.join(rootDir, 'config');
@@ -19,7 +20,7 @@ const targets = {
 
 const targetName = process.argv[2];
 const target = targets[targetName];
-const {branding, packaging} = loadAppConfig(configDir);
+const {branding, packaging, libraries} = loadAppConfig(configDir);
 
 if (targetName === 'icons')
 {
@@ -38,8 +39,11 @@ if (targetName === 'mac' && process.platform !== 'darwin')
 	throw new Error('The macOS build requires macOS so iconutil can create the ICNS asset.');
 }
 
+const customLibraries = validateCustomLibraries(configDir, libraries);
+const libraryResources = getBuiltInLibraryResources(rootDir, libraries.builtIn.included);
 await generateIcons(branding.logoUrl);
-const builderConfig = makeBuilderConfig(targetName, target.config, branding, packaging);
+const builderConfig = makeBuilderConfig(targetName, target.config, branding, packaging,
+	customLibraries, libraryResources);
 const builderConfigPath = path.join(generatedDir, 'electron-builder', `${targetName}.json`);
 fs.mkdirSync(path.dirname(builderConfigPath), {recursive: true});
 fs.writeFileSync(builderConfigPath, JSON.stringify(builderConfig, null, 2));
@@ -66,7 +70,7 @@ if (result.error)
 
 process.exit(result.status ?? 1);
 
-function makeBuilderConfig(targetName, configFile, branding, packaging)
+function makeBuilderConfig(targetName, configFile, branding, packaging, customLibraries = [], libraryResources = [])
 {
 	const config = JSON.parse(fs.readFileSync(path.join(rootDir, configFile), 'utf8'));
 	const productName = branding.appName.replace(/[\\/:*?"<>|]/g, '-').trim() || 'drawapp-minimal';
@@ -88,7 +92,8 @@ function makeBuilderConfig(targetName, configFile, branding, packaging)
 	config.directories = {...config.directories, output: packaging.outputDirectory};
 	config.fileAssociations = isMac ? [] :
 		packaging.fileAssociations.map(({macConformsTo, ...association}) => association);
-	config.files.push('config/app.json', '!.build{,/**}');
+	config.files.push('config/app.json', ...getLibraryFilePatterns(customLibraries, libraryResources),
+		'!.build{,/**}');
 
 	if (isMac)
 	{
@@ -173,10 +178,10 @@ async function generateIcons(logoUrl)
 {
 	if (!logoUrl || /^https?:\/\//i.test(logoUrl))
 	{
-		throw new Error('Icon generation requires a bundled logoUrl such as images/logo.png');
+		throw new Error('Icon generation requires a bundled logoUrl such as branding/logo.png');
 	}
 
-	const sourcePath = path.join(rootDir, 'drawio', 'src', 'main', 'webapp', logoUrl);
+	const sourcePath = path.join(configDir, logoUrl);
 	if (!fs.existsSync(sourcePath)) throw new Error(`Configured logo not found: ${sourcePath}`);
 	const sharpModule = await import('sharp');
 	const sharp = sharpModule.default;

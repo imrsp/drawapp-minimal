@@ -51,6 +51,16 @@ if (typeof window !== 'undefined')
 		repositoryLabel: decodeURIComponent(urlParams['repositoryLabel'] || ''),
 		copyright: decodeURIComponent(urlParams['copyright'] || '')
 	};
+	try
+	{
+		window.appLibraryConfig = urlParams['appLibraries'] ?
+			JSON.parse(decodeURIComponent(urlParams['appLibraries'])) : null;
+	}
+	catch (e)
+	{
+		window.appLibraryConfig = null;
+		console.error('Failed to read application library configuration:', e);
+	}
 	window.appDisplayVersion = window.appBranding.uiVersion || urlParams['appVersion'];
 }
 
