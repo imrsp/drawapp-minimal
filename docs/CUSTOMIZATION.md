@@ -37,7 +37,7 @@ Build the app using the existing platform command, such as `npm run build:linux`
 
 ## Packaging fields
 
-The `packaging` object in the same file controls the app ID, executable name, author, output directory, artifact naming, platform categories, AppX identity and publisher, and file associations. Signing, target architecture, and other platform-specific build mechanics remain in the `electron-builder-*.json` files; those files are build templates and are populated from `app.json` by `scripts/build.js`.
+The `packaging` object in the same file controls the app ID, `packageName`, executable name, author, output directory, artifact naming, platform categories, AppX identity and publisher, and file associations. `packageName` is the directory name Electron uses for per-user settings under the platform's app data directory (for example, `~/Library/Application Support/<packageName>` on macOS). Signing, target architecture, and other platform-specific build mechanics remain in the `electron-builder-*.json` files; those files are build templates and are populated from `app.json` by `scripts/build.js`.
 
 ## Icons
 

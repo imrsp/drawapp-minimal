@@ -17,6 +17,14 @@ import {spawn, exec} from 'child_process';
 import {loadAppConfig} from './branding.js';
 import {createEditorLibraryConfig} from './libraries.js';
 
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const configDir = path.resolve(__dirname, '../../config');
+const {branding, packaging, libraries} = loadAppConfig(configDir);
+
+// Electron otherwise derives userData from the package name. Keep the location
+// explicit so it can be changed independently through config/app.json.
+app.setPath('userData', path.join(app.getPath('appData'), packaging.packageName));
+
 let store;
 
 try
@@ -65,9 +73,6 @@ function detectInitialAdaptiveColorsDefault()
 	return mode;
 }
 
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
-const configDir = path.resolve(__dirname, '../../config');
-const {branding, libraries} = loadAppConfig(configDir);
 const displayedVersion = branding.uiVersion || app.getVersion();
 
 //Command option to disable hardware acceleration
@@ -121,6 +126,7 @@ const codeDir = path.join(__dirname, '/../../drawio/src/main/webapp');
 const codeUrl = url.pathToFileURL(codeDir).href.replace(/\/.\:\//, str => str.toUpperCase()); // Fix for windows drive letter
 const brandingLogoPath = branding.logoUrl.startsWith('branding/') ? path.join(configDir, branding.logoUrl) : null;
 const rendererLogoUrl = brandingLogoPath ? url.pathToFileURL(brandingLogoPath).href : branding.logoUrl;
+const brandingLogoRequestUrl = brandingLogoPath ? rendererLogoUrl.replace(/\/.\:\//, str => str.toUpperCase()) : null;
 // Production app uses asar archive, so we need to go up two more level. It's extra cautious since asar is read-only anyway.
 const appBaseDir = path.join(__dirname, __dirname.endsWith(path.join('resources', 'app.asar', 'src', 'main')) ?
 								'/../../../../' : '/../../');
@@ -892,12 +898,13 @@ app.whenReady().then(() =>
 		})
 	});
 
-	// Enforce loading file only from our app directory
+	// Keep renderer file loads inside the editor directory, with one exception
+	// for the configured branding asset stored under config/.
 	session.defaultSession.webRequest.onBeforeRequest({urls: ['file://*']}, (details, callback) =>
 	{
 		const url = details.url.replace(/\/.\:\//, str => str.toUpperCase());
 
-		if (!url.startsWith(codeUrl))
+		if (!url.startsWith(codeUrl) && url !== brandingLogoRequestUrl)
 		{
 			console.log('Blocked loading file from ' + details.url, url, codeUrl);
 			callback({cancel: true});

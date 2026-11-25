@@ -15,6 +15,7 @@
 	},
 	"packaging": {
 		"appId": "org.drawapp.minimal",
+		"packageName": "drawapp-minimal",
 		"executableName": "drawapp-minimal",
 		"author": "drawapp-minimal contributors",
 		"outputDirectory": "./dist/",

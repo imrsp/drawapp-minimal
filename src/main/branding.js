@@ -14,6 +14,7 @@ const DEFAULT_BRANDING = Object.freeze({
 
 const DEFAULT_PACKAGING = Object.freeze({
 	appId: 'org.drawapp.minimal',
+	packageName: 'drawapp-minimal',
 	executableName: 'drawapp-minimal',
 	author: 'drawapp-minimal contributors',
 	outputDirectory: './dist/',
@@ -28,6 +29,13 @@ const DEFAULT_PACKAGING = Object.freeze({
 function cleanString(value, fallback, maxLength = 200)
 {
 	return typeof value === 'string' && value.trim() ? value.trim().slice(0, maxLength) : fallback;
+}
+
+function cleanPackageName(value)
+{
+	const packageName = cleanString(value, DEFAULT_PACKAGING.packageName, 100);
+	return /^[a-z0-9][a-z0-9._-]*$/i.test(packageName) && packageName !== '.' && packageName !== '..' ?
+		packageName : DEFAULT_PACKAGING.packageName;
 }
 
 function normalizeBranding(value = {})
@@ -70,7 +78,7 @@ export function loadAppConfig(configDir)
 		raw.packaging : {};
 	return Object.freeze({
 		branding: normalizeBranding(raw),
-		packaging: Object.freeze({...DEFAULT_PACKAGING, ...packaging}),
+		packaging: Object.freeze({...DEFAULT_PACKAGING, ...packaging, packageName: cleanPackageName(packaging.packageName)}),
 		libraries: normalizeLibrarySettings(raw.libraries)
 	});
 }
