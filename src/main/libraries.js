@@ -160,9 +160,11 @@ export function createEditorLibraryConfig(libraries, appBaseDir)
 {
 	const customLibraries = libraries.custom.map(relativePath =>
 	{
-		const fileUrl = pathToFileURL(path.join(appBaseDir, 'config', 'mxlib', ...relativePath.split('/'))).href;
+		const filePath = path.resolve(appBaseDir, 'config', 'mxlib', ...relativePath.split('/'));
+		const fileUrl = pathToFileURL(filePath).href;
 		return {
-			id: `S${encodeURIComponent(fileUrl)}`,
+			id: `S${encodeURIComponent(filePath)}`,
+			legacyIds: [`S${encodeURIComponent(fileUrl)}`],
 			title: path.posix.basename(relativePath).replace(/\.xml$/i, '')
 		};
 	});

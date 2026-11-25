@@ -257,8 +257,8 @@ function collectConfigPaths()
 				});
 			}
 
-			// Library ids are a one-character service prefix (U for a URL,
-			// S for a desktop file) followed by the encoded URL
+			// Library IDs use a one-character service prefix (U for a URL,
+			// S for a desktop file) followed by the encoded URL or local path.
 			if (Array.isArray(config.defaultCustomLibraries))
 			{
 				config.defaultCustomLibraries.forEach(function(id)

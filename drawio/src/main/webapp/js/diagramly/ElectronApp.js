@@ -634,6 +634,82 @@ mxStencilRegistry.allowEval = false;
 		var includedLibraries = window.appLibraryConfig.enabledLibraries.concat(managedCustomLibraryIds);
 		var moreShapesOrder = Array.isArray(window.appLibraryConfig.moreShapesOrder) ?
 			window.appLibraryConfig.moreShapesOrder : ['custom', 'builtIn'];
+		var managedCustomLibraryIdMap = {};
+		managedCustomLibraries.forEach(function(library)
+		{
+			(library.legacyIds || []).forEach(function(id)
+			{
+				if (typeof id == 'string' && id.length > 1)
+				{
+					managedCustomLibraryIdMap[id] = library.id;
+				}
+			});
+		});
+
+		function migrateManagedCustomLibrarySettings()
+		{
+			if (mxSettings == null || mxSettings.settings == null) return;
+
+			var changed = false;
+			var settings = mxSettings.settings;
+
+			if (Array.isArray(settings.customLibraries))
+			{
+				var migratedIds = settings.customLibraries.map(function(id)
+				{
+					var migratedId = managedCustomLibraryIdMap[id] || id;
+					if (migratedId != id) changed = true;
+					return migratedId;
+				});
+				settings.customLibraries = migratedIds.filter(function(id, index)
+				{
+					return migratedIds.indexOf(id) == index;
+				});
+			}
+
+			var visibility = getManagedCustomLibraryVisibility();
+			Object.keys(managedCustomLibraryIdMap).forEach(function(oldId)
+			{
+				var newId = managedCustomLibraryIdMap[oldId];
+				if (Object.prototype.hasOwnProperty.call(visibility, oldId))
+				{
+					if (!Object.prototype.hasOwnProperty.call(visibility, newId))
+					{
+						visibility[newId] = visibility[oldId];
+					}
+					delete visibility[oldId];
+					changed = true;
+				}
+			});
+
+			if (changed)
+			{
+				settings.customLibraryVisibility = visibility;
+				mxSettings.save();
+			}
+		}
+
+		var originalRestoreLibraries = App.prototype.restoreLibraries;
+		App.prototype.restoreLibraries = function()
+		{
+			migrateManagedCustomLibrarySettings();
+			return originalRestoreLibraries.apply(this, arguments);
+		};
+
+		function loadManagedCustomLibraries(ui, ids)
+		{
+			if (ui == null || ui.sidebar == null) return;
+
+			var missing = ids.filter(function(id)
+			{
+				return ui.sidebar.palettes[id] == null;
+			});
+
+			if (missing.length > 0 && typeof ui.loadLibraries == 'function')
+			{
+				ui.loadLibraries(missing);
+			}
+		}
 
 		// The upstream "general" More Shapes entry controls three palettes as
 		// one unit. Split it so included/default IDs can address them separately.
@@ -748,6 +824,7 @@ mxStencilRegistry.allowEval = false;
 
 		Sidebar.prototype.showEntries = function(entries, remember, force)
 		{
+			migrateManagedCustomLibrarySettings();
 			var selected = null;
 
 			if (entries != null)
@@ -780,6 +857,10 @@ mxStencilRegistry.allowEval = false;
 			{
 				this.showPalette(id, isManagedCustomLibraryVisible(id));
 			}, this);
+			loadManagedCustomLibraries(this.editorUi, managedCustomLibraryIds.filter(function(id)
+			{
+				return isManagedCustomLibraryVisible(id);
+			}));
 
 			return result;
 		};
@@ -796,10 +877,10 @@ mxStencilRegistry.allowEval = false;
 				var originalCustomEntries = sidebar.customEntries;
 				var libraryEntries = managedCustomLibraries.map(function(library)
 				{
-					return {id: library.id, title: library.title || library.id};
+					return {id: library.id, title: {main: library.title || library.id}};
 				});
 				var customSections = (originalCustomEntries || []).concat([
-					{title: 'Custom Libraries', entries: libraryEntries}
+					{title: {main: 'Custom Libraries'}, entries: libraryEntries}
 				]);
 				var customFirst = moreShapesOrder.indexOf('custom') < moreShapesOrder.indexOf('builtIn');
 				var originalEnabledLibraries = Sidebar.prototype.enabledLibraries;
@@ -831,9 +912,12 @@ mxStencilRegistry.allowEval = false;
 							return ids.concat(section.entries.map(function(entry) { return entry.id; }));
 						}, []));
 				}
-
 				try
 				{
+					loadManagedCustomLibraries(editorUi, managedCustomLibraryIds.filter(function(id)
+					{
+						return isManagedCustomLibraryVisible(id);
+					}));
 					originalMoreShapesDialog.apply(this, args);
 				}
 				finally

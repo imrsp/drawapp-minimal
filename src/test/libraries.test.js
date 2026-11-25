@@ -75,7 +75,10 @@ test('editor config uses package availability and packaged custom library paths'
 	const editorConfig = createEditorLibraryConfig(libraries, '/tmp/drawapp.asar');
 	assert.deepEqual(editorConfig.enabledLibraries, ['general', 'flowchart']);
 	assert.equal(editorConfig.defaultLibraries, 'general');
-	assert.match(decodeURIComponent(editorConfig.defaultCustomLibraries[0]), /^Sfile:\/\/\/tmp\/drawapp\.asar\/config\/mxlib\/company\.xml$/);
+	assert.equal(decodeURIComponent(editorConfig.defaultCustomLibraries[0]),
+		'S/tmp/drawapp.asar/config/mxlib/company.xml');
+	assert.match(decodeURIComponent(editorConfig.managedCustomLibraries[0].legacyIds[0]),
+		/^Sfile:\/\/\/tmp\/drawapp\.asar\/config\/mxlib\/company\.xml$/);
 });
 
 test('built-in library resource selection follows the editor registry', () =>
