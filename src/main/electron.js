@@ -3213,8 +3213,8 @@ function isDraftOrBkpOfBlessed(realpath)
 }
 
 // Canonicalises a renderer-supplied path for the authorisation checks below:
-// returns both the lexically-resolved path and its realpath, and rejects
-// anything that isn't a usable path or that points inside the app bundle.
+// returns both the lexically-resolved path and its realpath. The caller still
+// has to authorize the result; configReadablePaths only grants read access.
 async function canonicalisePath(p)
 {
 	if (typeof p !== 'string' || !p || p.includes('\0'))
@@ -3251,11 +3251,6 @@ async function canonicalisePath(p)
 			// callers, so only paths the user authorised are accepted.
 			realpath = resolved;
 		}
-	}
-
-	if (realpath.startsWith(appBaseDir))
-	{
-		throw new Error('path not authorised');
 	}
 
 	return {resolved: resolved, realpath: realpath};
