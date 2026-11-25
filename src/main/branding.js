@@ -46,6 +46,28 @@ function cleanLogoScale(value)
 	return Number.isFinite(scale) && scale >= 0.25 && scale <= 2 ? scale : 1;
 }
 
+function normalizeAboutHtml(value)
+{
+	if (typeof value === 'string') return value.slice(0, 20000);
+	if (value == null || typeof value !== 'object' || Array.isArray(value)) return DEFAULT_BRANDING.aboutHtml;
+
+	const localized = {};
+	let remainingLength = 20000;
+	for (const [language, html] of Object.entries(value))
+	{
+		if ((language !== 'main' && !/^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/i.test(language)) ||
+			typeof html !== 'string' || remainingLength <= 0)
+		{
+			continue;
+		}
+
+		localized[language] = html.slice(0, remainingLength);
+		remainingLength -= localized[language].length;
+	}
+
+	return Object.freeze(localized);
+}
+
 function normalizeBranding(value = {})
 {
 	const appName = cleanString(value.appName, DEFAULT_BRANDING.appName);
@@ -68,7 +90,7 @@ function normalizeBranding(value = {})
 		uiVersion,
 		logoUrl,
 		logoScale,
-		aboutHtml: typeof value.aboutHtml === 'string' ? value.aboutHtml.slice(0, 20000) : DEFAULT_BRANDING.aboutHtml,
+		aboutHtml: normalizeAboutHtml(value.aboutHtml),
 		repositoryUrl: /^https?:\/\//i.test(repositoryUrl) ? repositoryUrl : DEFAULT_BRANDING.repositoryUrl,
 		repositoryLabel: cleanString(value.repositoryLabel, DEFAULT_BRANDING.repositoryLabel),
 		copyright: cleanString(value.copyright, `Copyright ${new Date().getFullYear()} ${appName} contributors`)

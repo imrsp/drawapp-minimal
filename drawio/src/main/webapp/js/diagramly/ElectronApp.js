@@ -105,15 +105,44 @@ if (typeof AboutDialog === 'function')
 				link.href = appBranding.repositoryUrl;
 				if (appBranding.repositoryLabel) link.textContent = appBranding.repositoryLabel;
 			}
+			var aboutHtml = appBranding.aboutHtml;
+			if (aboutHtml != null && typeof aboutHtml == 'object' && !Array.isArray(aboutHtml))
+			{
+				var language = (typeof mxLanguage == 'string' ? mxLanguage : '').replace(/_/g, '-');
+				var languageKeys = [language, language.split('-')[0], 'main'];
+				aboutHtml = null;
+				for (var i = 0; i < languageKeys.length && aboutHtml == null; i++)
+				{
+					var languageKey = languageKeys[i];
+					if (languageKey && typeof appBranding.aboutHtml[languageKey] == 'string')
+					{
+						aboutHtml = appBranding.aboutHtml[languageKey];
+					}
+					else if (languageKey)
+					{
+						Object.keys(appBranding.aboutHtml).some(function(key)
+						{
+							if (key.toLowerCase() == languageKey.toLowerCase() &&
+								typeof appBranding.aboutHtml[key] == 'string')
+							{
+								aboutHtml = appBranding.aboutHtml[key];
+								return true;
+							}
+
+							return false;
+						});
+					}
+				}
+			}
 			var closeButton = this.container.querySelector('button');
-			if (closeButton) closeButton.style.marginTop = '24px';
-			if (appBranding.aboutHtml)
+			if (closeButton) closeButton.style.marginTop = '0';
+			if (aboutHtml)
 			{
 				var customContent = document.createElement('div');
 				customContent.setAttribute('data-branding-about-html', '1');
 				customContent.className = 'geBrandingAboutHtml';
 				var template = document.createElement('template');
-				template.innerHTML = appBranding.aboutHtml;
+				template.innerHTML = aboutHtml;
 				var allowedTags = 'A,P,DIV,SPAN,BR,STRONG,B,EM,I,U,SMALL,UL,OL,LI,IMG,H1,H2,H3,H4,H5,H6,BLOCKQUOTE,HR,CODE,PRE'.split(',');
 				Array.from(template.content.querySelectorAll('*')).forEach(function(element)
 				{
@@ -169,6 +198,43 @@ if (typeof AboutDialog === 'function')
 						break;
 					}
 				}
+			}
+			var heading = this.container.querySelector('h3');
+			if (heading && closeButton)
+			{
+				var scrollContent = document.createElement('div');
+				scrollContent.setAttribute('data-branding-about-content', '1');
+				var footer = document.createElement('div');
+				footer.setAttribute('data-branding-about-footer', '1');
+				var children = Array.prototype.slice.call(this.container.childNodes);
+				children.forEach(function(child)
+				{
+					if (child !== heading && child !== closeButton)
+					{
+						scrollContent.appendChild(child);
+					}
+				});
+				while (this.container.firstChild) this.container.removeChild(this.container.firstChild);
+
+				this.container.style.display = 'flex';
+				this.container.style.flexDirection = 'column';
+				this.container.style.height = '100%';
+				this.container.style.minHeight = '0';
+				this.container.style.overflow = 'hidden';
+				this.container.style.boxSizing = 'border-box';
+				heading.style.flex = 'none';
+				heading.style.margin = '0 0 12px';
+				scrollContent.style.flex = '1';
+				scrollContent.style.minHeight = '0';
+				scrollContent.style.width = '100%';
+				scrollContent.style.overflowY = 'auto';
+				scrollContent.style.boxSizing = 'border-box';
+				footer.style.flex = 'none';
+				footer.style.paddingTop = '12px';
+				footer.appendChild(closeButton);
+				this.container.appendChild(heading);
+				this.container.appendChild(scrollContent);
+				this.container.appendChild(footer);
 			}
 		}
 	};
@@ -631,6 +697,8 @@ mxStencilRegistry.allowEval = false;
 				return library != null && typeof library.id == 'string' && library.id.length > 0;
 			}) : [];
 		var managedCustomLibraryIds = managedCustomLibraries.map(function(library) { return library.id; });
+		var customLibraryControls = window.appLibraryConfig.customLibraryControls === true;
+		var customGroupName = window.appLibraryConfig.customGroupName || 'Custom Libraries';
 		var includedLibraries = window.appLibraryConfig.enabledLibraries.concat(managedCustomLibraryIds);
 		var moreShapesOrder = Array.isArray(window.appLibraryConfig.moreShapesOrder) ?
 			window.appLibraryConfig.moreShapesOrder : ['custom', 'builtIn'];
@@ -710,6 +778,59 @@ mxStencilRegistry.allowEval = false;
 				ui.loadLibraries(missing);
 			}
 		}
+
+		// Sidebar.refresh rebuilds only native palettes. Preserve the expanded
+		// state and recreate already-loaded packaged palettes after that rebuild.
+		// A pending load is left alone; libraryLoaded applies the saved state when
+		// that asynchronous request completes.
+		var managedCustomLibraryExpandedStates = Object.create(null);
+		var originalSidebarRefresh = Sidebar.prototype.refresh;
+		Sidebar.prototype.refresh = function()
+		{
+			var ui = this.editorUi;
+			var oldPalettes = this.palettes;
+			managedCustomLibraryIds.forEach(function(id)
+			{
+				managedCustomLibraryExpandedStates[id] = this.wasPaletteExpanded(oldPalettes, id, true);
+			}, this);
+
+			var result = originalSidebarRefresh.apply(this, arguments);
+
+			if (ui != null && ui.sidebar == this && Array.isArray(ui.openLibraries))
+			{
+				ui.openLibraries.slice().forEach(function(library)
+				{
+					var file = library != null && library.file;
+					var id = file != null ? file.getHash() : null;
+
+					if (managedCustomLibraryIds.indexOf(id) < 0 || this.palettes[id] != null)
+					{
+						return;
+					}
+
+					// The search index survives Sidebar.refresh; skip indexing these
+					// entries a second time while restoring only their palette DOM.
+					var addEntries = this.addEntries;
+					this.addEntries = function() {};
+					try
+					{
+						ui.libraryLoaded(file, library.images, library.title,
+							managedCustomLibraryExpandedStates[id]);
+					}
+					finally
+					{
+						this.addEntries = addEntries;
+					}
+				}, this);
+
+				loadManagedCustomLibraries(ui, managedCustomLibraryIds.filter(function(id)
+				{
+					return isManagedCustomLibraryVisible(id);
+				}));
+			}
+
+			return result;
+		};
 
 		// The upstream "general" More Shapes entry controls three palettes as
 		// one unit. Split it so included/default IDs can address them separately.
@@ -880,7 +1001,7 @@ mxStencilRegistry.allowEval = false;
 					return {id: library.id, title: {main: library.title || library.id}};
 				});
 				var customSections = (originalCustomEntries || []).concat([
-					{title: {main: 'Custom Libraries'}, entries: libraryEntries}
+					{title: {main: customGroupName}, entries: libraryEntries}
 				]);
 				var customFirst = moreShapesOrder.indexOf('custom') < moreShapesOrder.indexOf('builtIn');
 				var originalEnabledLibraries = Sidebar.prototype.enabledLibraries;
@@ -933,12 +1054,40 @@ mxStencilRegistry.allowEval = false;
 		var originalLibraryLoaded = EditorUi.prototype.libraryLoaded;
 		EditorUi.prototype.libraryLoaded = function(file)
 		{
+			var id = file != null ? file.getHash() : null;
+			var managed = managedCustomLibraryIds.indexOf(id) >= 0;
+			if (managed && Object.prototype.hasOwnProperty.call(managedCustomLibraryExpandedStates, id))
+			{
+				arguments[3] = managedCustomLibraryExpandedStates[id];
+				delete managedCustomLibraryExpandedStates[id];
+			}
+
+			// Packaged libraries behave like native palettes by default: users can
+			// select them in More Shapes but cannot edit, close, or remove them.
+			if (managed && !customLibraryControls)
+			{
+				file.editable = false;
+			}
+
 			var result = originalLibraryLoaded.apply(this, arguments);
 
-			if (file != null && managedCustomLibraryIds.indexOf(file.getHash()) >= 0 &&
-				this.sidebar != null)
+			if (managed && this.sidebar != null)
 			{
-				this.sidebar.showPalette(file.getHash(), isManagedCustomLibraryVisible(file.getHash()));
+				this.sidebar.showPalette(id, isManagedCustomLibraryVisible(id));
+
+				if (!customLibraryControls)
+				{
+					var palette = this.sidebar.palettes[id];
+					var title = palette != null ? palette[0] : null;
+
+					if (title != null)
+					{
+						Array.prototype.forEach.call(title.querySelectorAll('.geLibraryButton'), function(button)
+						{
+							button.parentNode.removeChild(button);
+						});
+					}
+				}
 			}
 
 			return result;

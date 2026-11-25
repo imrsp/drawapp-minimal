@@ -18,6 +18,8 @@
 			"default": ["general", "misc", "advanced", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"]
 		},
 		"custom": [],
+		"customGroupName": "Custom Libraries",
+		"customLibraryControls": false,
 		"moreShapesOrder": ["builtIn", "custom"]
 	},
 	"packaging": {

@@ -51,13 +51,23 @@ if (typeof window !== 'undefined')
 	{
 		console.error('Failed to read application logo scale configuration:', e);
 	}
+	var aboutHtml = decodeURIComponent(urlParams['aboutHtml'] || '');
+	try
+	{
+		aboutHtml = JSON.parse(aboutHtml);
+	}
+	catch (e)
+	{
+		// Accept the unquoted string form used by older app configurations.
+	}
+
 	window.appBranding = {
 		appName: decodeURIComponent(urlParams['appName'] || ''),
 		description: decodeURIComponent(urlParams['description'] || ''),
 		uiVersion: decodeURIComponent(urlParams['displayVersion'] || ''),
 		logoUrl: decodeURIComponent(urlParams['logoUrl'] || ''),
 		logoScale: appLogoScale,
-		aboutHtml: decodeURIComponent(urlParams['aboutHtml'] || ''),
+		aboutHtml: aboutHtml,
 		repositoryUrl: decodeURIComponent(urlParams['repositoryUrl'] || ''),
 		repositoryLabel: decodeURIComponent(urlParams['repositoryLabel'] || ''),
 		copyright: decodeURIComponent(urlParams['copyright'] || '')

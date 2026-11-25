@@ -14,12 +14,12 @@ Keep every new project-specific customization setting and source file under `con
 - `logoUrl`: path relative to `config/` to the original PNG or SVG, for example `branding/logo.png`. This same source is used by the startup splash, editor header, About dialog, and generated platform icons. Bundled logos are required for packaged icons; remote URLs can only be used for runtime UI.
 - `logoScale`: independent size multipliers for `header`, `about`, and `splash` logos. `1` keeps the current size, `1.25` makes that logo 25% larger, and `0.8` makes it 20% smaller. Each value is limited to `0.25`–`2`; invalid or omitted values use `1`. For example, set `header` to `1.5` to enlarge the top-left editor logo without changing the other locations.
 - `repositoryUrl` and `repositoryLabel`: About view link destination and label. Clicking the editor's top-left app logo opens the same `repositoryUrl`.
-- `aboutHtml`: optional HTML content inserted in the About dialog between the repository link and copyright. Leave it as `""` to omit the section. It supports common text, heading, list, link, and image markup; scripts and active content are removed, and the value is limited to 20,000 characters.
+- `aboutHtml`: optional HTML content inserted in the About dialog between the repository link and copyright. Use a string for language-independent content, or an object keyed by language codes such as `en`, `zh-CN`, plus optional `main` fallback content. Scripts and active content are removed; the combined content is limited to 20,000 characters.
 - `copyright`: About view and package copyright; `null` derives it from the app name and current year.
 
 ## About dialog customization
 
-The About dialog's content can be customized, but its overall layout is fixed. Its elements appear in this order:
+The About dialog's content can be customized. The heading and Close controls stay fixed while the content area scrolls. Its elements appear in this order:
 
 | About dialog element | Setting | Behavior |
 | --- | --- | --- |
@@ -30,7 +30,17 @@ The About dialog's content can be customized, but its overall layout is fixed. I
 | Custom content | `aboutHtml` | Optional supported HTML inserted below the link and above the copyright. |
 | Copyright | `copyright` | Uses this text; `null` generates a default from the current year and app name. |
 
-The localized “About” and “Close” labels and the order of elements are fixed. The custom HTML is intended for presentation content: scripts, event-handler attributes, embedded frames, and unsafe URL schemes are removed. `description` is used for app metadata and the startup screen, but is not shown in the About dialog.
+The “About” and “Close” labels use the editor's current language. A string in `aboutHtml` is used for every language. For localized content, keys should match the editor language (for example `zh-CN`); the base language (such as `zh`) is tried next, followed by `main`. For example:
+
+```json
+"aboutHtml": {
+  "en": "<p>Diagram tools for the team.</p>",
+  "zh-CN": "<p>团队图表工具。</p>",
+  "main": "<p>Diagram tools.</p>"
+}
+```
+
+The custom HTML is intended for presentation content: scripts, event-handler attributes, embedded frames, and unsafe URL schemes are removed. `description` is used for app metadata and the startup screen, but is not shown in the About dialog.
 
 ## Shape libraries
 
@@ -42,7 +52,12 @@ Use the top-level `libraries` setting in `config/app.json` to manage shape libra
     "included": ["general", "misc", "advanced", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"],
     "default": ["general", "misc", "advanced", "uml", "er", "bpmn", "flowchart", "basic", "arrows2"]
   },
-  "custom": ["company.xml"],
+  "custom": [
+    {"path": "company.xml", "name": "Company Shapes"},
+    "network/topology.xml"
+  ],
+  "customGroupName": "Company Libraries",
+  "customLibraryControls": false,
   "moreShapesOrder": ["builtIn", "custom"]
 }
 ```
@@ -51,9 +66,11 @@ Use the top-level `libraries` setting in `config/app.json` to manage shape libra
 
 `moreShapesOrder` controls whether the built-in More Shapes categories or the packaged Custom Libraries category appears first. It must contain `"builtIn"` and `"custom"` exactly once. If omitted, the existing custom-first order is kept. Set it to `["builtIn", "custom"]` to show Standard and the other built-in categories before Custom Libraries. This changes category placement only; each library's More Shapes checkbox and saved visibility preference are independent.
 
-Custom libraries use draw.io's native `.xml` format: the document has an `<mxlibrary>` root containing a JSON array of entries. Create one in the editor with **File > New Library**, add shapes, groups, or images, and save/export it. You can also import an existing `.xml` library with **File > Open Library**. Copy the file into `config/mxlib/`, then add its path relative to that directory to `libraries.custom`. For example, `"custom": ["company.xml"]` refers to `config/mxlib/company.xml`; subdirectories are supported. Registered libraries are loaded automatically when the desktop app starts and are included in every build target. Builds check that each listed file exists and is a valid `mxlibrary` document.
+Custom libraries use draw.io's native `.xml` format: the document has an `<mxlibrary>` root containing a JSON array of entries. Create one in the editor with **File > New Library**, add shapes, groups, or images, and save/export it. You can also import an existing `.xml` library with **File > Open Library**. Copy the file into `config/mxlib/`, then add its path relative to that directory to `libraries.custom`. A string such as `"company.xml"` refers to `config/mxlib/company.xml`; subdirectories are supported. An object entry can set a More Shapes label with `{"path": "company.xml", "name": "Company Shapes"}`. String entries remain supported and use the filename without `.xml` as their label. Registered libraries are loaded automatically when the desktop app starts and are included in every build target. Builds check that each listed file exists and is a valid `mxlibrary` document.
 
-Each packaged custom library appears as its own checkbox in **More Shapes > Custom Libraries**, labeled with its filename without the `.xml` extension. All packaged custom libraries are enabled for a new user. The editor saves each selection in the user's `.drawio-config` settings under `customLibraryVisibility`, keyed by the library's packaged ID. Missing preference entries use the enabled default; saved choices remain authoritative across restarts and language changes. Renaming or moving a library changes its ID and initializes that library to enabled. This setting only controls packaged libraries declared in `libraries.custom`; `builtIn.default` continues to control built-in libraries.
+Each packaged custom library appears as its own checkbox in **More Shapes > Custom Libraries**. `customGroupName` changes the category heading, and the optional `name` on a custom library entry changes that library's checkbox label. Without these settings the heading is `Custom Libraries` and the label comes from the filename without `.xml`. All packaged custom libraries are enabled for a new user. The editor saves each selection in the user's `.drawio-config` settings under `customLibraryVisibility`, keyed by the library's packaged ID. Missing preference entries use the enabled default; saved choices remain authoritative across restarts and language changes. Renaming or moving a library changes its ID and initializes that library to enabled. This setting only controls packaged libraries declared in `libraries.custom`; `builtIn.default` continues to control built-in libraries.
+
+`customLibraryControls` defaults to `false`, so packaged libraries behave like native palettes and their add, edit, and close buttons are hidden. This also makes the packaged library read-only in the editor. Set it to `true` to retain the normal controls for those libraries.
 
 Build the app using the existing platform command, such as `npm run build:linux` or `npm run build:win`. The complete XML format and editor workflow are documented by [draw.io](https://www.drawio.com/docs/reference/format-custom-shape-library/) and [the custom library guide](https://www.drawio.com/docs/manual/advanced/custom-shape-libraries/).
 

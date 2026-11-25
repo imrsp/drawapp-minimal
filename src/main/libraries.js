@@ -7,6 +7,7 @@ export const DEFAULT_BUILT_IN_LIBRARIES = Object.freeze([
 ]);
 
 export const DEFAULT_MORE_SHAPES_ORDER = Object.freeze(['custom', 'builtIn']);
+export const DEFAULT_CUSTOM_LIBRARY_GROUP_NAME = 'Custom Libraries';
 
 const LIBRARY_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
 
@@ -51,25 +52,56 @@ export function normalizeLibrarySettings(value = {})
 	}
 
 	const custom = value.custom ?? [];
-	if (!Array.isArray(custom) || custom.some(file => typeof file !== 'string'))
+	if (!Array.isArray(custom) || custom.some(entry => typeof entry !== 'string' &&
+		(entry == null || typeof entry !== 'object' || Array.isArray(entry))))
 	{
-		throw new Error('libraries.custom must be an array of paths relative to config/mxlib');
+		throw new Error('libraries.custom must be an array of paths or {path, name} entries');
 	}
 
-	const customFiles = [...new Set(custom)];
-	for (const file of customFiles)
+	const customEntries = [];
+	const customFiles = new Set();
+	for (const entry of custom)
 	{
+		const file = typeof entry === 'string' ? entry : entry.path;
+		const name = typeof entry === 'string' ? null : entry.name;
+		if (typeof file !== 'string')
+		{
+			throw new Error('Each libraries.custom object needs a string path');
+		}
+		if (name != null && (typeof name !== 'string' || !name.trim() || name.trim().length > 120))
+		{
+			throw new Error('Custom library name must be a non-empty string of at most 120 characters');
+		}
 		if (!file || path.isAbsolute(file) || file.includes('\\') ||
 			!file.toLowerCase().endsWith('.xml') ||
 			file.split('/').some(part => !part || part === '.' || part === '..'))
 		{
 			throw new Error(`Invalid custom library path "${file}". Use an .xml path relative to config/mxlib.`);
 		}
+
+		if (!customFiles.has(file))
+		{
+			customFiles.add(file);
+			customEntries.push(Object.freeze({path: file, name: name == null ? null : name.trim()}));
+		}
+	}
+	const customGroupName = value.customGroupName ?? DEFAULT_CUSTOM_LIBRARY_GROUP_NAME;
+	if (typeof customGroupName !== 'string' || !customGroupName.trim() || customGroupName.trim().length > 120)
+	{
+		throw new Error('libraries.customGroupName must be a non-empty string of at most 120 characters');
+	}
+	const customLibraryControls = value.customLibraryControls ?? false;
+	if (typeof customLibraryControls !== 'boolean')
+	{
+		throw new Error('libraries.customLibraryControls must be a boolean');
 	}
 
 	return Object.freeze({
 		builtIn: Object.freeze({included: Object.freeze(included), default: Object.freeze(defaults)}),
-		custom: Object.freeze(customFiles),
+		custom: Object.freeze([...customFiles]),
+		customEntries: Object.freeze(customEntries),
+		customGroupName: customGroupName.trim(),
+		customLibraryControls,
 		moreShapesOrder: Object.freeze([...moreShapesOrder])
 	});
 }
@@ -158,14 +190,16 @@ export function validateCustomLibraries(configDir, libraries)
 
 export function createEditorLibraryConfig(libraries, appBaseDir)
 {
+	const customEntries = new Map((libraries.customEntries || []).map(entry => [entry.path, entry]));
 	const customLibraries = libraries.custom.map(relativePath =>
 	{
 		const filePath = path.resolve(appBaseDir, 'config', 'mxlib', ...relativePath.split('/'));
 		const fileUrl = pathToFileURL(filePath).href;
+		const customEntry = customEntries.get(relativePath);
 		return {
 			id: `S${encodeURIComponent(filePath)}`,
 			legacyIds: [`S${encodeURIComponent(fileUrl)}`],
-			title: path.posix.basename(relativePath).replace(/\.xml$/i, '')
+			title: customEntry && customEntry.name || path.posix.basename(relativePath).replace(/\.xml$/i, '')
 		};
 	});
 
@@ -174,6 +208,8 @@ export function createEditorLibraryConfig(libraries, appBaseDir)
 		defaultLibraries: libraries.builtIn.default.join(';'),
 		defaultCustomLibraries: customLibraries.map(library => library.id),
 		managedCustomLibraries: customLibraries,
+		customGroupName: libraries.customGroupName || DEFAULT_CUSTOM_LIBRARY_GROUP_NAME,
+		customLibraryControls: libraries.customLibraryControls === true,
 		moreShapesOrder: [...libraries.moreShapesOrder]
 	};
 }
