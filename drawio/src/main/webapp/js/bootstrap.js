@@ -48,7 +48,8 @@ if (typeof window !== 'undefined')
 		uiVersion: decodeURIComponent(urlParams['displayVersion'] || ''),
 		logoUrl: decodeURIComponent(urlParams['logoUrl'] || ''),
 		repositoryUrl: decodeURIComponent(urlParams['repositoryUrl'] || ''),
-		repositoryLabel: decodeURIComponent(urlParams['repositoryLabel'] || '')
+		repositoryLabel: decodeURIComponent(urlParams['repositoryLabel'] || ''),
+		copyright: decodeURIComponent(urlParams['copyright'] || '')
 	};
 	window.appDisplayVersion = window.appBranding.uiVersion || urlParams['appVersion'];
 }

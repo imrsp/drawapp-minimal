@@ -252,7 +252,7 @@ export default async function notarizing(context) {
   signQuickLookExtension(appPath);
 
   // Explicit opt-out for personal/fork builds with no Apple Developer
-  // account. See doc/BUILDING_FOR_PERSONAL_USE.md.
+  // account. See docs/BUILDING.md.
   if (process.env.DRAWIO_UNSIGNED === 'true')
   {
     console.log('DRAWIO_UNSIGNED=true: skipping notarization');

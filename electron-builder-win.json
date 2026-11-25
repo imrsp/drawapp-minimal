@@ -1,12 +1,7 @@
 {
-  "appId": "org.drawapp.minimal",
-  "copyright": "Copyright 2026 DrawApp contributors",
-  "productName": "DrawApp",
   "asar": true,
   "files": [
     "**/*",
-    "config/branding.json",
-    "config/branding.local.json",
     "!**/WEB-INF{,/**}",
     "!drawio/src/main/webapp/stencils/**/*.xml",
     "!drawio/src/main/webapp/shapes{,/**}",
@@ -18,9 +13,6 @@
     "!node_modules/@cantoo/pdf-lib/{cjs,dist,src,ts3.4}{,/**}",
     "!**/*.map"
   ],
-  "directories": {
-    "output": "./dist/"
-  },
   "npmRebuild": false,
   "win": {
     "signtoolOptions": {
@@ -48,7 +40,6 @@
     ]
   },
   "nsis": {
-    "artifactName": "${productName}-${version}-windows-installer.${ext}",
     "oneClick": false,
     "perMachine": true,
     "allowToChangeInstallationDirectory": true,
@@ -56,36 +47,9 @@
     "createDesktopShortcut": false
   },
   "msi": {
-    "artifactName": "${productName}-${version}.${ext}",
     "runAfterFinish": false,
     "createDesktopShortcut": false
   },
   "afterPack": "build/fuses.mjs",
-  "msiProjectCreated": "build/msi-project-created.mjs",
-  "fileAssociations": [
-    {
-      "ext": "drawio",
-      "name": "Diagram file",
-      "description": "Diagram file",
-      "mimeType": "application/vnd.jgraph.mxfile",
-      "role": "Editor"
-    },
-    {
-      "ext": "vsdx",
-      "name": "VSDX Document",
-      "description": "VSDX Document",
-      "mimeType": "application/vnd.visio",
-      "role": "Editor"
-    },
-    {
-      "ext": [
-        "mmd",
-        "mermaid"
-      ],
-      "name": "Mermaid Diagram",
-      "description": "Mermaid Diagram",
-      "mimeType": "text/vnd.mermaid",
-      "role": "Editor"
-    }
-  ]
+  "msiProjectCreated": "build/msi-project-created.mjs"
 }

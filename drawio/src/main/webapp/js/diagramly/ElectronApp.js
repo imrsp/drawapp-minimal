@@ -83,6 +83,18 @@ if (typeof AboutDialog === 'function')
 				link.href = appBranding.repositoryUrl;
 				if (appBranding.repositoryLabel) link.textContent = appBranding.repositoryLabel;
 			}
+			if (appBranding.copyright)
+			{
+				var copyrightText = this.container.querySelector('[data-branding-copyright="1"]');
+				if (!copyrightText)
+				{
+					copyrightText = document.createElement('div');
+					copyrightText.setAttribute('data-branding-copyright', '1');
+				}
+				copyrightText.textContent = appBranding.copyright;
+				var closeButton = this.container.querySelector('button');
+				this.container.insertBefore(copyrightText, closeButton || null);
+			}
 			if (window.appDisplayVersion)
 			{
 				var walker = document.createTreeWalker(this.container, NodeFilter.SHOW_TEXT);
@@ -108,7 +120,8 @@ if (EditorUi.prototype.updateTabContainer &&
 	EditorUi.prototype.updateTabContainer = function()
 	{
 		var result = originalUpdateTabContainer.apply(this, arguments);
-		var link = this.tabContainer && this.tabContainer.querySelector('a[href*="github.com"]');
+		var link = this.tabContainer && this.tabContainer.querySelector('a img[src*="github"], a[href*="github.com"]');
+		if (link && link.tagName !== 'A') link = link.closest('a');
 		if (link)
 		{
 			link.href = appBranding.repositoryUrl || link.href;
@@ -164,7 +177,7 @@ if (appBranding.logoUrl)
 		if (node.querySelectorAll) links = links.concat(Array.from(node.querySelectorAll('a')));
 		links.forEach(function(link)
 		{
-			if (link.href.indexOf('github.com/imrsp/drawapp-minimal') >= 0)
+			if (link.querySelector('img[src*="github"]') || link.href.indexOf('github.com') >= 0 || /repository|github/i.test(link.title || ''))
 			{
 				var repositoryUrl = appBranding.repositoryUrl || link.href;
 				if (link.href !== repositoryUrl) link.href = repositoryUrl;

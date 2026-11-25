@@ -1,12 +1,7 @@
 {
-  "appId": "org.drawapp.minimal",
-  "copyright": "Copyright 2026 DrawApp contributors",
-  "productName": "DrawApp",
   "asar": true,
   "files": [
     "**/*",
-    "config/branding.json",
-    "config/branding.local.json",
     "!**/WEB-INF{,/**}",
     "!drawio/src/main/webapp/stencils/**/*.xml",
     "!drawio/src/main/webapp/shapes{,/**}",
@@ -18,76 +13,12 @@
     "!node_modules/@cantoo/pdf-lib/{cjs,dist,src,ts3.4}{,/**}",
     "!**/*.map"
   ],
-  "artifactName": "${productName}-${arch}-${version}.${ext}",
-  "directories": {
-    "output": "./dist/"
-  },
   "npmRebuild": false,
   "mac": {
     "hardenedRuntime": true,
     "gatekeeperAssess": false,
     "entitlements": "build/entitlements.mac.plist",
     "entitlementsInherit": "build/entitlements.mac.plist",
-    "category": "public.app-category.graphics-design",
-    "extendInfo": {
-      "UTExportedTypeDeclarations": [
-        {
-          "UTTypeIdentifier": "org.drawapp.minimal.diagram",
-          "UTTypeDescription": "drawapp-minimal Diagram",
-          "UTTypeConformsTo": [
-            "public.xml",
-            "public.data"
-          ],
-          "UTTypeTagSpecification": {
-            "public.filename-extension": [
-              "drawio"
-            ],
-            "public.mime-type": [
-              "application/vnd.jgraph.mxfile"
-            ]
-          }
-        }
-      ],
-      "CFBundleDocumentTypes": [
-        {
-          "CFBundleTypeExtensions": [
-            "drawio"
-          ],
-          "CFBundleTypeName": "drawapp-minimal Diagram",
-          "CFBundleTypeRole": "Editor",
-          "CFBundleTypeIconFile": "icon.icns",
-          "LSItemContentTypes": [
-            "org.drawapp.minimal.diagram"
-          ],
-          "LSHandlerRank": "Owner"
-        },
-        {
-          "CFBundleTypeExtensions": [
-            "vsdx"
-          ],
-          "CFBundleTypeName": "drawapp-minimal Diagram",
-          "CFBundleTypeRole": "Editor",
-          "CFBundleTypeIconFile": "icon.icns",
-          "LSHandlerRank": "Default",
-          "LSItemContentTypes": [
-            "org.drawapp.minimal.diagram"
-          ]
-        },
-        {
-          "CFBundleTypeExtensions": [
-            "mmd",
-            "mermaid"
-          ],
-          "CFBundleTypeName": "drawapp-minimal Diagram",
-          "CFBundleTypeRole": "Editor",
-          "CFBundleTypeIconFile": "icon.icns",
-          "LSHandlerRank": "Default",
-          "LSItemContentTypes": [
-            "org.drawapp.minimal.diagram"
-          ]
-        }
-      ]
-    },
     "target": [
       {
         "target": "zip",
@@ -117,14 +48,8 @@
     "compression": "gzip"
   },
   "linux": {
-    "executableName": "drawapp-minimal",
-    "category": "Graphics",
-    "maintainer": "drawapp-minimal contributors",
-    "icon": "./build",
     "desktop": {
-      "entry": {
-        "StartupWMClass": "drawapp-minimal"
-      }
+      "entry": {}
     },
     "target": [
       {
@@ -155,31 +80,5 @@
       "--rpm-rpmbuild-define=_build_id_links none",
       "--rpm-digest=sha256"
     ]
-  },
-  "fileAssociations": [
-    {
-      "ext": "drawio",
-      "name": "Diagram file",
-      "description": "Diagram file",
-      "mimeType": "application/vnd.jgraph.mxfile",
-      "role": "Editor"
-    },
-    {
-      "ext": "vsdx",
-      "name": "VSDX Document",
-      "description": "VSDX Document",
-      "mimeType": "application/vnd.visio",
-      "role": "Editor"
-    },
-    {
-      "ext": [
-        "mmd",
-        "mermaid"
-      ],
-      "name": "Mermaid Diagram",
-      "description": "Mermaid Diagram",
-      "mimeType": "text/vnd.mermaid",
-      "role": "Editor"
-    }
-  ]
+  }
 }

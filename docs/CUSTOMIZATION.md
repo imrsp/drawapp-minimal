@@ -1,0 +1,22 @@
+# Application customization
+
+Edit [`config/app.json`](../config/app.json) to change the app's branding and packaging metadata from one place. There is no separate local branding override: the values in this file are the values used for development and packaging.
+
+## Branding fields
+
+- `appName`: product name in the window, editor, About views, and installers.
+- `description`: app description; `null` or an omitted value derives it from `appName`.
+- `uiVersion`: optional version shown in the app UI. The actual product version still comes from `package.json`.
+- `logoUrl`: path to the original PNG or SVG under `drawio/src/main/webapp/`, for example `images/electron-logo.png`. The same source is shown in the editor and used to generate platform icons. Bundled logos are required for packaged icons; remote URLs can only be used for runtime UI.
+- `repositoryUrl` and `repositoryLabel`: About view link destination and label.
+- `copyright`: About view and package copyright; `null` derives it from the app name and current year.
+
+## Packaging fields
+
+The `packaging` object in the same file controls the app ID, executable name, author, output directory, artifact naming, platform categories, AppX identity and publisher, and file associations. Signing, target architecture, and other platform-specific build mechanics remain in the `electron-builder-*.json` files; those files are build templates and are populated from `app.json` by `scripts/build.js`.
+
+## Icons
+
+Install dependencies once, set `logoUrl` to a bundled source image, then run any `npm run build:*` command. [Sharp](https://sharp.pixelplumbing.com/) resizes the original into the PNG sizes required by Linux and AppX; the build script also emits Windows ICO and, when building on macOS, macOS ICNS formats. Generated files and temporary builder configuration live in `.build/`, which is ignored by Git. To regenerate icons without packaging, run `npm run generate:icons`.
+
+Changing `app.json` applies when the app is restarted or rebuilt. The editor's own `Extras > Configuration` settings are separate per-user preferences and are deliberately not used as product defaults here. See [Versioning](VERSIONING.md) for the package release version.

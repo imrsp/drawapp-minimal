@@ -5,10 +5,23 @@ const DEFAULT_BRANDING = Object.freeze({
 	appName: 'DrawApp',
 	description: null,
 	uiVersion: null,
-	logoUrl: null,
+	logoUrl: 'images/electron-logo.png',
 	repositoryUrl: 'https://github.com/imrsp/drawapp-minimal',
 	repositoryLabel: 'imrsp/drawapp-minimal',
 	copyright: null
+});
+
+const DEFAULT_PACKAGING = Object.freeze({
+	appId: 'org.drawapp.minimal',
+	executableName: 'drawapp-minimal',
+	author: 'drawapp-minimal contributors',
+	outputDirectory: './dist/',
+	artifactNames: {},
+	macCategory: 'public.app-category.graphics-design',
+	linuxCategory: 'Graphics',
+	linuxMaintainer: 'drawapp-minimal contributors',
+	appx: {},
+	fileAssociations: []
 });
 
 function cleanString(value, fallback, maxLength = 200)
@@ -21,7 +34,7 @@ function normalizeBranding(value = {})
 	const appName = cleanString(value.appName, DEFAULT_BRANDING.appName);
 	const requestedLogoUrl = typeof value.logoUrl === 'string' ? value.logoUrl.trim() : '';
 	const logoUrl = /^https?:\/\//i.test(requestedLogoUrl) || /^images\/[a-z0-9._-]+\.(?:png|svg)$/i.test(requestedLogoUrl) ?
-		requestedLogoUrl.slice(0, 2048) : null;
+		requestedLogoUrl.slice(0, 2048) : DEFAULT_BRANDING.logoUrl;
 	const uiVersion = typeof value.uiVersion === 'string' && value.uiVersion.trim() ?
 		value.uiVersion.trim().slice(0, 80) : null;
 	const repositoryUrl = cleanString(value.repositoryUrl, DEFAULT_BRANDING.repositoryUrl, 2048);
@@ -32,7 +45,7 @@ function normalizeBranding(value = {})
 		logoUrl,
 		repositoryUrl: /^https?:\/\//i.test(repositoryUrl) ? repositoryUrl : DEFAULT_BRANDING.repositoryUrl,
 		repositoryLabel: cleanString(value.repositoryLabel, DEFAULT_BRANDING.repositoryLabel),
-		copyright: cleanString(value.copyright, `Copyright 2026 ${appName} contributors`)
+		copyright: cleanString(value.copyright, `Copyright ${new Date().getFullYear()} ${appName} contributors`)
 	});
 }
 
@@ -44,18 +57,25 @@ function readJson(filePath)
 	}
 	catch (e)
 	{
-		if (e.code !== 'ENOENT') console.warn(`Unable to read branding configuration ${filePath}:`, e.message);
+		if (e.code !== 'ENOENT') console.warn(`Unable to read application configuration ${filePath}:`, e.message);
 		return {};
 	}
 }
 
-export function loadBranding(configDir)
+export function loadAppConfig(configDir)
 {
-	return normalizeBranding({
-		...DEFAULT_BRANDING,
-		...readJson(path.join(configDir, 'branding.json')),
-		...readJson(path.join(configDir, 'branding.local.json'))
+	const raw = readJson(path.join(configDir, 'app.json'));
+	const packaging = raw.packaging != null && typeof raw.packaging === 'object' && !Array.isArray(raw.packaging) ?
+		raw.packaging : {};
+	return Object.freeze({
+		branding: normalizeBranding(raw),
+		packaging: Object.freeze({...DEFAULT_PACKAGING, ...packaging})
 	});
 }
 
-export { DEFAULT_BRANDING };
+export function loadBranding(configDir)
+{
+	return loadAppConfig(configDir).branding;
+}
+
+export {DEFAULT_BRANDING, DEFAULT_PACKAGING};

@@ -1,8 +1,6 @@
 {
   "name": "drawapp-minimal",
-  "productName": "DrawApp",
   "version": "1.0.0",
-  "description": "DrawApp desktop diagram editor",
   "exports": "./src/main/electron.js",
   "type": "module",
   "main": "src/main/electron.js",
@@ -12,6 +10,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test src/test/branding.test.js src/test/cli-args.test.js src/test/msi-project-created.test.js src/test/window-bounds.test.js src/test/window-lifecycle.test.js",
+    "generate:icons": "node scripts/build.js icons",
     "build:mac": "node scripts/build.js mac",
     "build:win": "node scripts/build.js win",
     "build:win-arm64": "node scripts/build.js winArm64",
@@ -43,6 +42,7 @@
     "electron": "^44.2.0",
     "electron-builder": "^26.15.7",
     "quicklookjs": "^1.0.1",
+    "sharp": "^0.35.5",
     "sumchecker": "^3.0.1"
   }
 }

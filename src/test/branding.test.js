@@ -5,31 +5,26 @@ import path from 'node:path';
 import test from 'node:test';
 import {loadBranding} from '../main/branding.js';
 
-test('loadBranding applies defaults and overlays local branding values', () =>
+test('loadBranding reads the unified application configuration', () =>
 {
 	const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'drawapp-branding-'));
 
 	try
 	{
-		fs.writeFileSync(path.join(dir, 'branding.json'), JSON.stringify({
+		fs.writeFileSync(path.join(dir, 'app.json'), JSON.stringify({
 			appName: 'Configured App',
 			logoUrl: 'https://example.com/logo.png',
-			uiVersion: '2.4.0'
-		}));
-		fs.writeFileSync(path.join(dir, 'branding.local.json'), JSON.stringify({
-			appName: 'Local App',
-			uiVersion: '2.4.1-dev',
-			repositoryUrl: 'javascript:alert(1)',
-			logoUrl: 'file:///tmp/logo.png'
+			uiVersion: '2.4.0',
+			copyright: 'Copyright 2025 Custom Team'
 		}));
 
 		const branding = loadBranding(dir);
-		assert.equal(branding.appName, 'Local App');
-		assert.equal(branding.description, 'Local App desktop diagram editor');
-		assert.equal(branding.uiVersion, '2.4.1-dev');
-		assert.equal(branding.logoUrl, null);
+		assert.equal(branding.appName, 'Configured App');
+		assert.equal(branding.description, 'Configured App desktop diagram editor');
+		assert.equal(branding.uiVersion, '2.4.0');
+		assert.equal(branding.copyright, 'Copyright 2025 Custom Team');
+		assert.equal(branding.logoUrl, 'https://example.com/logo.png');
 		assert.equal(branding.repositoryUrl, 'https://github.com/imrsp/drawapp-minimal');
-		assert.match(branding.copyright, /Local App contributors$/);
 	}
 	finally
 	{
@@ -43,11 +38,12 @@ test('loadBranding falls back cleanly when config files are missing or malformed
 
 	try
 	{
-		fs.writeFileSync(path.join(dir, 'branding.json'), '{not json');
+		fs.writeFileSync(path.join(dir, 'app.json'), '{not json');
 		const branding = loadBranding(dir);
 		assert.equal(branding.appName, 'DrawApp');
-		assert.equal(branding.logoUrl, null);
+		assert.equal(branding.logoUrl, 'images/electron-logo.png');
 		assert.equal(branding.uiVersion, null);
+		assert.match(branding.copyright, new RegExp(`^Copyright ${new Date().getFullYear()} DrawApp contributors$`));
 	}
 	finally
 	{
@@ -61,10 +57,10 @@ test('loadBranding accepts bundled app logos but rejects unsafe relative paths',
 
 	try
 	{
-		fs.writeFileSync(path.join(dir, 'branding.json'), JSON.stringify({logoUrl: 'images/electron-logo.svg'}));
+		fs.writeFileSync(path.join(dir, 'app.json'), JSON.stringify({logoUrl: 'images/electron-logo.svg'}));
 		assert.equal(loadBranding(dir).logoUrl, 'images/electron-logo.svg');
-		fs.writeFileSync(path.join(dir, 'branding.json'), JSON.stringify({logoUrl: 'images/../logo.svg'}));
-		assert.equal(loadBranding(dir).logoUrl, null);
+		fs.writeFileSync(path.join(dir, 'app.json'), JSON.stringify({logoUrl: 'images/../logo.svg'}));
+		assert.equal(loadBranding(dir).logoUrl, 'images/electron-logo.png');
 	}
 	finally
 	{

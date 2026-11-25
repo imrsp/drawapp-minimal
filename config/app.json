@@ -1,0 +1,53 @@
+{
+	"appName": "DrawApp",
+	"description": "DrawApp desktop diagram editor",
+	"uiVersion": null,
+	"logoUrl": "images/electron-logo.png",
+	"repositoryUrl": "https://github.com/imrsp/drawapp-minimal",
+	"repositoryLabel": "imrsp/drawapp-minimal",
+	"copyright": null,
+	"packaging": {
+		"appId": "org.drawapp.minimal",
+		"executableName": "drawapp-minimal",
+		"author": "drawapp-minimal contributors",
+		"outputDirectory": "./dist/",
+		"artifactNames": {
+			"default": "${productName}-${arch}-${version}.${ext}",
+			"windowsInstaller": "${productName}-${version}-windows-installer.${ext}",
+			"windowsPackage": "${productName}-${version}.${ext}",
+			"windowsArm64Installer": "${productName}-arm64-${version}-windows-arm64-installer.${ext}",
+			"windowsArm64Portable": "${productName}-arm64-${version}-windows-arm64-no-installer.${ext}"
+		},
+		"macCategory": "public.app-category.graphics-design",
+		"linuxCategory": "Graphics",
+		"linuxMaintainer": "drawapp-minimal contributors",
+		"appx": {
+			"identityName": "DrawApp.DrawApp",
+			"publisher": "CN=9E628CCB-BE04-4557-A5A8-81EC34B09733"
+		},
+		"fileAssociations": [
+			{
+				"ext": "drawio",
+				"name": "Diagram file",
+				"description": "Diagram file",
+				"mimeType": "application/vnd.jgraph.mxfile",
+				"role": "Editor",
+				"macConformsTo": ["public.xml", "public.data"]
+			},
+			{
+				"ext": "vsdx",
+				"name": "VSDX Document",
+				"description": "VSDX Document",
+				"mimeType": "application/vnd.visio",
+				"role": "Editor"
+			},
+			{
+				"ext": ["mmd", "mermaid"],
+				"name": "Mermaid Diagram",
+				"description": "Mermaid Diagram",
+				"mimeType": "text/vnd.mermaid",
+				"role": "Editor"
+			}
+		]
+	}
+}

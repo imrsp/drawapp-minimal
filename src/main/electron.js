@@ -641,6 +641,7 @@ function createWindow (opt = {})
 	queryObj['logoUrl'] = branding.logoUrl || '';
 	queryObj['repositoryUrl'] = branding.repositoryUrl;
 	queryObj['repositoryLabel'] = branding.repositoryLabel;
+	queryObj['copyright'] = branding.copyright;
 
 	let ourl = url.format(
 	{

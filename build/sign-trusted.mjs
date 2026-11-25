@@ -25,7 +25,7 @@ const PROFILE_NAME = 'drawio-codesign';
 export default async function (configuration)
 {
     // Explicit opt-out for personal/fork builds with no signing
-    // infrastructure. See doc/BUILDING_FOR_PERSONAL_USE.md.
+    // infrastructure. See docs/BUILDING.md.
     if (process.env.DRAWIO_UNSIGNED === 'true')
     {
         console.log(`DRAWIO_UNSIGNED=true: skipping code signing for ${configuration.path}`);
@@ -37,7 +37,7 @@ export default async function (configuration)
 
     if (!dlibPath || !fs.existsSync(dlibPath))
     {
-        throw new Error(`Trusted Signing dlib not found at "${dlibPath}". The "Set up signing dependencies" workflow step should set TRUSTED_SIGNING_DLIB_PATH. For an unsigned personal build, set DRAWIO_UNSIGNED=true instead (see doc/BUILDING_FOR_PERSONAL_USE.md).`);
+        throw new Error(`Trusted Signing dlib not found at "${dlibPath}". The "Set up signing dependencies" workflow step should set TRUSTED_SIGNING_DLIB_PATH. For an unsigned personal build, set DRAWIO_UNSIGNED=true instead (see docs/BUILDING.md).`);
     }
 
     if (!signtool || !fs.existsSync(signtool))

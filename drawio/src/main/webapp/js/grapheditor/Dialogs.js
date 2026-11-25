@@ -2186,7 +2186,8 @@ var AboutDialog = function(editorUi)
 	var link = document.createElement('a');
 	link.setAttribute('href', 'http://www.jgraph.com/');
 	link.setAttribute('target', '_blank');
-	mxUtils.write(link, 'www.jgraph.com');
+	link.href = (typeof appBranding !== 'undefined' && appBranding.repositoryUrl) || 'https://github.com/imrsp/drawapp-minimal';
+	mxUtils.write(link, (typeof appBranding !== 'undefined' && appBranding.repositoryLabel) || 'imrsp/drawapp-minimal');
 	div.appendChild(link);
 	mxUtils.br(div);
 	mxUtils.br(div);
