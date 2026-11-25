@@ -563,19 +563,119 @@ mxStencilRegistry.allowEval = false;
 	if (window.appLibraryConfig != null && Array.isArray(window.appLibraryConfig.enabledLibraries))
 	{
 		var originalShowEntries = Sidebar.prototype.showEntries;
-		var includedLibraries = window.appLibraryConfig.enabledLibraries;
+		var managedCustomLibraries = Array.isArray(window.appLibraryConfig.managedCustomLibraries) ?
+			window.appLibraryConfig.managedCustomLibraries.filter(function(library)
+			{
+				return library != null && typeof library.id == 'string' && library.id.length > 0;
+			}) : [];
+		var managedCustomLibraryIds = managedCustomLibraries.map(function(library) { return library.id; });
+		var includedLibraries = window.appLibraryConfig.enabledLibraries.concat(managedCustomLibraryIds);
+
+		function getManagedCustomLibraryVisibility()
+		{
+			var settings = mxSettings && mxSettings.settings;
+			var visibility = settings && settings.customLibraryVisibility;
+			return visibility != null && typeof visibility == 'object' && !Array.isArray(visibility) ?
+				visibility : {};
+		}
+
+		function isManagedCustomLibraryVisible(id)
+		{
+			return getManagedCustomLibraryVisibility()[id] !== false;
+		}
+
+		var originalIsEntryVisible = Sidebar.prototype.isEntryVisible;
+		Sidebar.prototype.isEntryVisible = function(id)
+		{
+			if (managedCustomLibraryIds.indexOf(id) >= 0)
+			{
+				return isManagedCustomLibraryVisible(id);
+			}
+
+			return originalIsEntryVisible.apply(this, arguments);
+		};
+
 		Sidebar.prototype.showEntries = function(entries, remember, force)
 		{
+			var selected = null;
+
 			if (entries != null)
 			{
-				var selected = Array.isArray(entries) ? entries : String(entries).split(';');
+				selected = Array.isArray(entries) ? entries : String(entries).split(';');
 				entries = selected.filter(function(id)
 				{
 					return includedLibraries.indexOf(this.libAliases[id] || id) >= 0;
 				}, this).join(';');
 			}
 
-			return originalShowEntries.call(this, entries, remember, force);
+			var result = originalShowEntries.call(this, entries, remember, force);
+
+			if (selected != null && mxSettings != null && mxSettings.settings != null)
+			{
+				var visibility = getManagedCustomLibraryVisibility();
+
+				managedCustomLibraryIds.forEach(function(id)
+				{
+					visibility[id] = selected.indexOf(id) >= 0;
+				});
+
+				mxSettings.settings.customLibraryVisibility = visibility;
+				// These are user preferences and must be retained even when the
+				// built-in More Shapes "remember" checkbox is unchecked.
+				mxSettings.save();
+			}
+
+			managedCustomLibraryIds.forEach(function(id)
+			{
+				this.showPalette(id, isManagedCustomLibraryVisible(id));
+			}, this);
+
+			return result;
+		};
+
+		// Show packaged libraries as independently selectable rows in the native
+		// More Shapes dialog. Their IDs are the same stable IDs used by the
+		// desktop library loader and the sidebar palettes.
+		if (typeof MoreShapesDialog == 'function' && managedCustomLibraries.length > 0)
+		{
+			var originalMoreShapesDialog = MoreShapesDialog;
+			MoreShapesDialog = function(editorUi)
+			{
+				var sidebar = editorUi.sidebar;
+				var originalCustomEntries = sidebar.customEntries;
+				var libraryEntries = managedCustomLibraries.map(function(library)
+				{
+					return {id: library.id, title: library.title || library.id};
+				});
+				sidebar.customEntries = (originalCustomEntries || []).concat([
+					{title: 'Custom Libraries', entries: libraryEntries}
+				]);
+
+				try
+				{
+					originalMoreShapesDialog.apply(this, arguments);
+				}
+				finally
+				{
+					sidebar.customEntries = originalCustomEntries;
+				}
+			};
+		}
+
+		// A packaged library can finish loading after the initial sidebar
+		// visibility pass, so apply the saved preference as each palette arrives.
+		var originalLibraryLoaded = EditorUi.prototype.libraryLoaded;
+		EditorUi.prototype.libraryLoaded = function(file)
+		{
+			var result = originalLibraryLoaded.apply(this, arguments);
+
+			if (file != null && managedCustomLibraryIds.indexOf(file.getHash()) >= 0 &&
+				this.sidebar != null)
+			{
+				this.sidebar.showPalette(file.getHash(), isManagedCustomLibraryVisible(file.getHash()));
+			}
+
+			return result;
 		};
 	}
 	

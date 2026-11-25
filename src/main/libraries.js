@@ -148,16 +148,20 @@ export function validateCustomLibraries(configDir, libraries)
 
 export function createEditorLibraryConfig(libraries, appBaseDir)
 {
-	const customIds = libraries.custom.map(relativePath =>
+	const customLibraries = libraries.custom.map(relativePath =>
 	{
 		const fileUrl = pathToFileURL(path.join(appBaseDir, 'config', 'mxlib', ...relativePath.split('/'))).href;
-		return `S${encodeURIComponent(fileUrl)}`;
+		return {
+			id: `S${encodeURIComponent(fileUrl)}`,
+			title: path.posix.basename(relativePath).replace(/\.xml$/i, '')
+		};
 	});
 
 	return {
 		enabledLibraries: [...libraries.builtIn.included],
 		defaultLibraries: libraries.builtIn.default.join(';'),
-		defaultCustomLibraries: customIds
+		defaultCustomLibraries: customLibraries.map(library => library.id),
+		managedCustomLibraries: customLibraries
 	};
 }
 
