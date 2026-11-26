@@ -713,6 +713,10 @@ mxStencilRegistry.allowEval = false;
 		var includedLibraries = window.appLibraryConfig.enabledLibraries.concat(managedCustomLibraryIds);
 		var moreShapesOrder = Array.isArray(window.appLibraryConfig.moreShapesOrder) ?
 			window.appLibraryConfig.moreShapesOrder : ['custom', 'builtIn'];
+		var moreShapesSectionOrder = Array.isArray(window.appLibraryConfig.moreShapesSectionOrder) ?
+			window.appLibraryConfig.moreShapesSectionOrder : [];
+		var moreShapesLibraryOrder = Array.isArray(window.appLibraryConfig.moreShapesLibraryOrder) ?
+			window.appLibraryConfig.moreShapesLibraryOrder : [];
 		var managedCustomLibraryIdMap = {};
 		managedCustomLibraries.forEach(function(library)
 		{
@@ -882,14 +886,42 @@ mxStencilRegistry.allowEval = false;
 		};
 
 		var originalUpdateEntries = Sidebar.prototype.updateEntries;
+		function reorderEntriesById(entries, order)
+		{
+			var priorities = Object.create(null);
+			order.forEach(function(id, index)
+			{
+				if (!Object.prototype.hasOwnProperty.call(priorities, id))
+				{
+					priorities[id] = index;
+				}
+			});
+
+			return entries.map(function(entry, index)
+			{
+				return {entry: entry, index: index};
+			}).sort(function(a, b)
+			{
+				var aPriority = Object.prototype.hasOwnProperty.call(priorities, a.entry.id) ?
+					priorities[a.entry.id] : order.length;
+				var bPriority = Object.prototype.hasOwnProperty.call(priorities, b.entry.id) ?
+					priorities[b.entry.id] : order.length;
+				return aPriority - bPriority || a.index - b.index;
+			}).map(function(item)
+			{
+				return item.entry;
+			});
+		}
+
 		Sidebar.prototype.updateEntries = function()
 		{
 			originalUpdateEntries.apply(this, arguments);
+			this.entries = reorderEntriesById(this.entries, moreShapesSectionOrder);
 
 			var standard = null;
 			for (var i = 0; i < this.entries.length; i++)
 			{
-				if (this.entries[i].title == mxResources.get('standard'))
+				if (this.entries[i].id == 'standard')
 				{
 					standard = this.entries[i];
 					break;
@@ -928,6 +960,8 @@ mxStencilRegistry.allowEval = false;
 				standard.entries.splice.apply(standard.entries,
 					[generalIndex + 1, 0].concat(additions));
 			}
+
+			standard.entries = reorderEntriesById(standard.entries, moreShapesLibraryOrder);
 		};
 
 		function getManagedCustomLibraryVisibility()

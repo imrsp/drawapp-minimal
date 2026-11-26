@@ -50,6 +50,10 @@ export function normalizeLibrarySettings(value = {})
 	{
 		throw new Error('libraries.moreShapesOrder must contain "builtIn" and "custom" exactly once');
 	}
+	const moreShapesSectionOrder = uniqueStrings(value.moreShapesSectionOrder ?? [],
+		'moreShapesSectionOrder');
+	const moreShapesLibraryOrder = uniqueStrings(value.moreShapesLibraryOrder ?? [],
+		'moreShapesLibraryOrder');
 
 	const custom = value.custom ?? [];
 	if (!Array.isArray(custom) || custom.some(entry => typeof entry !== 'string' &&
@@ -102,7 +106,9 @@ export function normalizeLibrarySettings(value = {})
 		customEntries: Object.freeze(customEntries),
 		customGroupName: customGroupName.trim(),
 		customLibraryControls,
-		moreShapesOrder: Object.freeze([...moreShapesOrder])
+		moreShapesOrder: Object.freeze([...moreShapesOrder]),
+		moreShapesSectionOrder: Object.freeze(moreShapesSectionOrder),
+		moreShapesLibraryOrder: Object.freeze(moreShapesLibraryOrder)
 	});
 }
 
@@ -210,7 +216,9 @@ export function createEditorLibraryConfig(libraries, appBaseDir)
 		managedCustomLibraries: customLibraries,
 		customGroupName: libraries.customGroupName || DEFAULT_CUSTOM_LIBRARY_GROUP_NAME,
 		customLibraryControls: libraries.customLibraryControls === true,
-		moreShapesOrder: [...libraries.moreShapesOrder]
+		moreShapesOrder: [...libraries.moreShapesOrder],
+		moreShapesSectionOrder: [...libraries.moreShapesSectionOrder],
+		moreShapesLibraryOrder: [...libraries.moreShapesLibraryOrder]
 	};
 }
 

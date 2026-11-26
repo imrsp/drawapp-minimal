@@ -20,7 +20,9 @@
 		"custom": [],
 		"customGroupName": "Custom Libraries",
 		"customLibraryControls": false,
-		"moreShapesOrder": ["builtIn", "custom"]
+		"moreShapesOrder": ["builtIn", "custom"],
+		"moreShapesSectionOrder": [],
+		"moreShapesLibraryOrder": []
 	},
 	"packaging": {
 		"appId": "org.drawapp.minimal",
